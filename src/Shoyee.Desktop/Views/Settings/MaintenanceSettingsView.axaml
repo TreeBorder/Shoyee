@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             x:Class="Shoyee.Desktop.Views.Settings.MaintenanceSettingsView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="30,18,30,40" Spacing="16"
+                HorizontalAlignment="Stretch">
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <StackPanel Spacing="3">
+            <TextBlock Text="重载配置" Classes="h2" />
+            <TextBlock Text="config.reload：热更新工具黑名单、附件等已支持的段；只影响新会话。"
+                       Classes="caption" />
+          </StackPanel>
+          <Separator />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="重载配置" Classes="primary" FontSize="11.5"
+                    Command="{Binding Runtime.ReloadConfigCommand}" />
+            <TextBlock Text="{Binding Runtime.StatusText}" Classes="caption"
+                       VerticalAlignment="Center" TextWrapping="Wrap" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <StackPanel Spacing="3">
+            <TextBlock Text="重启 daemon" Classes="h2" />
+            <TextBlock Text="退出后由 launchd 拉起；模型、工具、MCP、渠道等变化需要重启。无守护进程时等同于停机。"
+                       Classes="caption" />
+          </StackPanel>
+          <Separator />
+
+          <Border IsVisible="{Binding Runtime.HasError}"
+                  Background="{DynamicResource CardHoverBrush}"
+                  CornerRadius="8" Padding="10,7">
+            <TextBlock Text="{Binding Runtime.ErrorText}" Classes="caption"
+                       Foreground="{DynamicResource DangerBrush}" TextWrapping="Wrap" />
+          </Border>
+
+          <StackPanel Orientation="Horizontal" Spacing="8"
+                      IsVisible="{Binding !Runtime.IsConfirmingRestart}">
+            <Button Content="重启 daemon" Classes="ghost" FontSize="11.5"
+                    Foreground="{DynamicResource DangerBrush}"
+                    Command="{Binding Runtime.RequestRestartCommand}" />
+          </StackPanel>
+
+          <Border IsVisible="{Binding Runtime.IsConfirmingRestart}"
+                  BorderBrush="{DynamicResource DangerBrush}"
+                  BorderThickness="1" CornerRadius="10" Padding="12,10">
+            <StackPanel Spacing="8">
+              <TextBlock Text="确定重启 daemon？正在跑的一轮会被中断，桌面会自动重连。"
+                         FontSize="12" TextWrapping="Wrap" />
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="确认重启" Classes="ghost" FontSize="11.5"
+                        Foreground="{DynamicResource DangerBrush}"
+                        Command="{Binding Runtime.ConfirmRestartCommand}" />
+                <Button Content="取消" Classes="ghost" FontSize="11.5"
+                        Command="{Binding Runtime.CancelRestartCommand}" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

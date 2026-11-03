@@ -1,0 +1,98 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:items="using:Shoyee.Desktop.ViewModels.Items"
+             x:Class="Shoyee.Desktop.Views.Settings.McpSettingsView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="30,18,30,40" Spacing="16"
+                HorizontalAlignment="Stretch">
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="3">
+              <TextBlock Text="MCP 服务" Classes="h2" />
+              <TextBlock Text="MCP 服务在 daemon 启动时连接；单服务失败只记日志，不影响其他工具。"
+                         Classes="caption" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                        VerticalAlignment="Top">
+              <Border Classes="badge mint" IsVisible="{Binding Runtime.IsLive}">
+                <TextBlock Text="实时" />
+              </Border>
+              <Border Classes="badge muted" IsVisible="{Binding Runtime.IsPlaceholder}">
+                <TextBlock Text="占位" />
+              </Border>
+              <ProgressBar IsIndeterminate="True" Width="40" Height="4"
+                           IsVisible="{Binding Runtime.IsLoading}" VerticalAlignment="Center" />
+              <Button Content="重连 MCP" Classes="ghost" FontSize="11.5"
+                      Command="{Binding Runtime.ReloadMcpCommand}"
+                      ToolTip.Tip="mcp.reload；工具名集合变了要重启 daemon" />
+            </StackPanel>
+          </Grid>
+
+          <Border IsVisible="{Binding Runtime.HasError}"
+                  Background="{DynamicResource CardHoverBrush}"
+                  CornerRadius="8" Padding="10,7">
+            <TextBlock Text="{Binding Runtime.ErrorText}" Classes="caption"
+                       Foreground="{DynamicResource DangerBrush}" TextWrapping="Wrap" />
+          </Border>
+
+          <Separator />
+
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding Runtime.StatusText}" Classes="caption" />
+            <TextBlock Grid.Column="1" Text="{Binding Runtime.McpCountText}" Classes="caption" />
+          </Grid>
+
+          <ItemsControl ItemsSource="{Binding McpServers}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="2" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="items:McpServerItem">
+                <Border Padding="8,8" CornerRadius="8">
+                  <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Ellipse Width="7" Height="7" Margin="2,5,10,0"
+                             VerticalAlignment="Top"
+                             IsVisible="{Binding IsHealthy}"
+                             Fill="{DynamicResource MintBrush}" />
+                    <Ellipse Width="7" Height="7" Margin="2,5,10,0"
+                             VerticalAlignment="Top"
+                             IsVisible="{Binding !IsHealthy}"
+                             Fill="{DynamicResource GoldBrush}" />
+
+                    <StackPanel Grid.Column="1" Spacing="2">
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{Binding Name}" FontSize="12.5" FontWeight="SemiBold" />
+                        <Border Classes="chip" Padding="6,0">
+                          <TextBlock Text="{Binding ToolsText}" Classes="caption" />
+                        </Border>
+                      </StackPanel>
+                      <TextBlock Text="{Binding Endpoint}" Classes="mono muted" FontSize="10.5"
+                                 TextTrimming="CharacterEllipsis" />
+                      <TextBlock Text="{Binding Error}" Classes="caption"
+                                 Foreground="{DynamicResource DangerBrush}"
+                                 IsVisible="{Binding HasError}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <TextBlock Grid.Column="2" Text="{Binding Status}" Classes="caption"
+                               VerticalAlignment="Top" />
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <TextBlock Text="数据来自 mcp.status；「重连」（mcp.reload）与工具白名单写入口下一步再接。"
+                     Classes="caption" />
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

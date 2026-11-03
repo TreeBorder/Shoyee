@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 会话层：人设文件读取与模板、会话创建/轮转、开场加载、RP 组装与轮次记录、摘要触发 -->
+  <ItemGroup>
+    <ProjectReference Include="..\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+    <ProjectReference Include="..\Shoyee.Storage.Abstractions\Shoyee.Storage.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Agents.AI.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.AI.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             x:Class="Shoyee.Desktop.Views.Settings.PromptSettingsView"
+             x:DataType="vm:MainViewModel">
+
+  <!-- 提示词页铺满内容区：顶部信息条，下面正文占满剩余高度、内部滚动 -->
+  <Grid Margin="30,18,30,24" RowDefinitions="Auto,*" RowSpacing="14">
+
+    <Border Classes="card" Padding="16,14">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="3">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="{Binding SelectedPromptPreview.Title}" FontSize="15"
+                       FontWeight="SemiBold" VerticalAlignment="Center" />
+            <Border Classes="chip" VerticalAlignment="Center">
+              <TextBlock Text="{Binding SelectedPromptPreview.CharCount, StringFormat='{}{0} 字'}"
+                         Classes="caption" />
+            </Border>
+          </StackPanel>
+          <TextBlock Text="{Binding SelectedPromptPreview.Source}" Classes="mono muted"
+                     FontSize="10.5" TextTrimming="CharacterEllipsis" />
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"
+                    VerticalAlignment="Center">
+          <Button Content="用系统编辑器打开" Classes="ghost" FontSize="11.5"
+                  IsEnabled="{Binding SelectedPromptPreview.HasFile}"
+                  Command="{Binding Runtime.OpenPathCommand}"
+                  CommandParameter="{Binding SelectedPromptPreview.Path}"
+                  ToolTip.Tip="改完对新建会话生效" />
+          <Border Classes="chip" VerticalAlignment="Center">
+            <TextBlock Text="改完 /new 生效" Classes="caption" />
+          </Border>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="1" Classes="card" Padding="0">
+      <Grid RowDefinitions="Auto,*">
+        <TextBlock Text="{Binding SelectedPromptPreview.Description}"
+                   Classes="caption" Margin="18,14,18,10" />
+        <Border Grid.Row="1" BorderBrush="{DynamicResource BorderSoftBrush}"
+                BorderThickness="0,1,0,0">
+          <ScrollViewer Padding="18,14,18,18" VerticalScrollBarVisibility="Auto">
+            <SelectableTextBlock Text="{Binding SelectedPromptPreview.Preview}"
+                                 FontFamily="Menlo, Monaco, monospace" FontSize="12"
+                                 LineHeight="21" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextBrush}" />
+          </ScrollViewer>
+        </Border>
+      </Grid>
+    </Border>
+
+  </Grid>
+</UserControl>

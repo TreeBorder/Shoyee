@@ -1,0 +1,116 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:settings="using:Shoyee.Desktop.ViewModels.Settings"
+             x:Class="Shoyee.Desktop.Views.Settings.ConnectionSettingsView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="30,18,30,40" Spacing="16"
+                HorizontalAlignment="Stretch">
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="14">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="3">
+              <TextBlock Text="工作区" Classes="h2" />
+              <TextBlock Text="{Binding Runtime.StatusText}" Classes="caption" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                        VerticalAlignment="Top">
+              <Border Classes="badge mint" IsVisible="{Binding Runtime.IsLive}">
+                <TextBlock Text="实时" />
+              </Border>
+              <Border Classes="badge muted" IsVisible="{Binding Runtime.IsPlaceholder}">
+                <TextBlock Text="占位" />
+              </Border>
+              <Button Content="刷新" Classes="ghost" FontSize="11.5"
+                      Command="{Binding Runtime.RefreshCommand}" />
+            </StackPanel>
+          </Grid>
+
+          <Border IsVisible="{Binding Runtime.HasError}"
+                  Background="{DynamicResource CardHoverBrush}"
+                  CornerRadius="8" Padding="10,7">
+            <TextBlock Text="{Binding Runtime.ErrorText}" Classes="caption"
+                       Foreground="{DynamicResource DangerBrush}" TextWrapping="Wrap" />
+          </Border>
+
+          <Separator />
+
+          <ItemsControl ItemsSource="{Binding Runtime.WorkspacePaths}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="4" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="settings:WorkspacePathItem">
+                <Grid ColumnDefinitions="120,*,Auto" Margin="0,2">
+                  <TextBlock Text="{Binding Label}" Classes="muted" FontSize="11.5"
+                             VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="{Binding Path}"
+                             Classes="mono muted" FontSize="10.5"
+                             TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                             ToolTip.Tip="{Binding Path}" />
+                  <Button Grid.Column="2" Classes="ghost" FontSize="11" Content="打开"
+                          Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).Runtime.OpenPathCommand}"
+                          CommandParameter="{Binding Path}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <TextBlock Text="连上 daemon 后显示 workspace.paths 返回的真实路径；现在还没拉到数据。"
+                     Classes="caption" IsVisible="{Binding !Runtime.IsLive}" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <StackPanel Spacing="3">
+            <TextBlock Text="守护进程" Classes="h2" />
+            <TextBlock Text="hello / ping、角色权限与在线 Lane。" Classes="caption" />
+          </StackPanel>
+
+          <Separator />
+
+          <Grid ColumnDefinitions="Auto,*">
+            <Ellipse Width="8" Height="8" Fill="{DynamicResource GoldBrush}"
+                     VerticalAlignment="Center" />
+            <StackPanel Grid.Column="1" Margin="9,0,0,0" Spacing="1">
+              <TextBlock Text="{Binding ConnectionText}" FontSize="12.5" FontWeight="SemiBold" />
+              <TextBlock Text="20s ping · 断线指数退避重连" Classes="caption" />
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <StackPanel Spacing="3">
+            <TextBlock Text="文件位置" Classes="h2" />
+            <TextBlock Text="桌面偏好只写 desktop.json，不进 daemon 工作区配置。"
+                       Classes="caption" />
+          </StackPanel>
+
+          <Separator />
+
+          <Grid ColumnDefinitions="88,*" RowDefinitions="Auto,Auto">
+            <TextBlock Text="desktop.json" Classes="muted" Margin="0,0,0,8" />
+            <TextBlock Grid.Column="1"
+                       Text="~/Library/Application Support/Shoyee/desktop.json"
+                       Classes="mono muted" Margin="0,0,0,8"
+                       TextTrimming="CharacterEllipsis" />
+
+            <TextBlock Grid.Row="1" Text="工作区配置" Classes="muted" />
+            <TextBlock Grid.Row="1" Grid.Column="1"
+                       Text="{Binding Runtime.ConfigPath}" Classes="mono muted"
+                       TextTrimming="CharacterEllipsis" />
+          </Grid>
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

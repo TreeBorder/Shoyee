@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 检索层：会话检索、INDEX 地址簿（笔记库检索见 Shoyee.Notes.*） -->
+  <ItemGroup>
+    <ProjectReference Include="..\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+    <ProjectReference Include="..\Shoyee.Storage.Abstractions\Shoyee.Storage.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Shoyee.Memory.Tests" />
+  </ItemGroup>
+</Project>

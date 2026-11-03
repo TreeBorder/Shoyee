@@ -1,0 +1,101 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:settings="using:Shoyee.Desktop.ViewModels.Settings"
+             x:Class="Shoyee.Desktop.Views.Settings.RoleplayStatesView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="30,18,30,40" Spacing="14">
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="3">
+              <TextBlock Text="状态表" Classes="h2" />
+              <TextBlock Text="她通过 update_state 维护；这里改完走 state.set 立即生效。"
+                         Classes="caption" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                        VerticalAlignment="Top">
+              <Border Classes="badge mint" IsVisible="{Binding Runtime.IsLive}">
+                <TextBlock Text="实时" />
+              </Border>
+              <Border Classes="badge muted" IsVisible="{Binding Runtime.IsPlaceholder}">
+                <TextBlock Text="占位" />
+              </Border>
+              <Button Content="刷新" Classes="ghost" FontSize="11.5"
+                      Command="{Binding Runtime.RefreshCommand}" />
+              <Button Content="保存改动" Classes="primary" FontSize="11.5"
+                      Command="{Binding Runtime.SaveStatesCommand}" />
+            </StackPanel>
+          </Grid>
+
+          <Border IsVisible="{Binding Runtime.HasError}"
+                  Background="{DynamicResource CardHoverBrush}"
+                  CornerRadius="8" Padding="10,7">
+            <TextBlock Text="{Binding Runtime.ErrorText}" Classes="caption"
+                       Foreground="{DynamicResource DangerBrush}" TextWrapping="Wrap" />
+          </Border>
+
+          <TextBlock Text="{Binding Runtime.StatusText}" Classes="caption" />
+
+          <Separator />
+
+          <!-- 表头 -->
+          <Border Background="{DynamicResource BgRaisedBrush}" CornerRadius="8" Padding="12,8">
+            <Grid ColumnDefinitions="150,*,2*">
+              <TextBlock Text="状态项" Classes="label" />
+              <TextBlock Grid.Column="1" Text="当前值（可改）" Classes="label" />
+              <TextBlock Grid.Column="2" Text="说明" Classes="label" />
+            </Grid>
+          </Border>
+
+          <ItemsControl ItemsSource="{Binding Runtime.StateRows}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="2" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="settings:StateEditItem">
+                <Border Padding="12,6" CornerRadius="8">
+                  <Grid ColumnDefinitions="150,*,2*">
+                    <StackPanel VerticalAlignment="Center">
+                      <TextBlock Text="{Binding Name}" Classes="mono" FontSize="11.5" />
+                      <TextBlock Text="{Binding Key}" Classes="caption" />
+                    </StackPanel>
+                    <TextBox Grid.Column="1" Text="{Binding Value}" FontSize="12"
+                             Padding="8,5" Margin="0,0,10,0" />
+                    <TextBlock Grid.Column="2" Text="{Binding Description}" Classes="caption"
+                               VerticalAlignment="Center" TextWrapping="Wrap" />
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="10">
+          <TextBlock Text="词表与写入口" Classes="h2" />
+          <Separator />
+          <Grid ColumnDefinitions="150,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+            <TextBlock Text="场景词表" Classes="muted" />
+            <TextBlock Grid.Column="1" Text="18 个场景（Shoyee.Photo 词表）" Classes="caption"
+                       VerticalAlignment="Center" />
+            <TextBlock Grid.Row="1" Text="服装词表" Classes="muted" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="12 套（Shoyee.Photo 词表）"
+                       Classes="caption" VerticalAlignment="Center" />
+            <TextBlock Grid.Row="2" Text="写入口" Classes="muted" />
+            <TextBlock Grid.Row="2" Grid.Column="1"
+                       Text="桌面走 state.set；她自己也用 update_state / update_states / add_state"
+                       Classes="caption" VerticalAlignment="Center" />
+          </Grid>
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

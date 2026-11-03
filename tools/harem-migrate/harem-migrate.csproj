@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Shoyee.Storage.Sqlite\Shoyee.Storage.Sqlite.csproj" />
+  </ItemGroup>
+</Project>

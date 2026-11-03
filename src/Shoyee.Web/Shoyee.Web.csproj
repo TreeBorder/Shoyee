@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 网页能力契约：搜索/抓取接口与 DTO（不绑定供应商） -->
+</Project>

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 邮件通知实现：SMTP 直连（System.Net.Mail），凭据只从环境变量读 -->
+  <ItemGroup>
+    <ProjectReference Include="..\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Shoyee.Notify.Email.Tests" />
+  </ItemGroup>
+</Project>

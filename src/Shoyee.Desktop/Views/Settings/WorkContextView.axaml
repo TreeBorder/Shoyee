@@ -1,0 +1,112 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:items="using:Shoyee.Desktop.ViewModels.Items"
+             xmlns:primitives="using:Avalonia.Controls.Primitives"
+             x:Class="Shoyee.Desktop.Views.Settings.WorkContextView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="30,18,30,40" Spacing="14">
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="3">
+              <TextBlock Text="上下文压缩" Classes="h2" />
+              <TextBlock Text="长会话的兜底：到高水位才把小模型摘要接进来，最近若干组原文保留；500K 以下不压。"
+                         Classes="caption" />
+            </StackPanel>
+            <Border Grid.Column="1" Classes="badge muted" VerticalAlignment="Center">
+              <TextBlock Text="默认关闭" />
+            </Border>
+          </Grid>
+
+          <Separator />
+
+          <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" RowSpacing="12"
+                ColumnSpacing="14">
+            <StackPanel Spacing="5">
+              <TextBlock Text="启用压缩" Classes="label" />
+              <ToggleSwitch IsChecked="False" IsEnabled="False" />
+              <TextBlock Text="默认关闭；只在明确的配置里打开" Classes="caption" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="5">
+              <TextBlock Text="模型窗口（token）" Classes="label" />
+              <TextBox Text="1000000" FontSize="13" />
+              <TextBlock Text="输出上限按模型配置：DeepSeek 384K / MiMo 128K" Classes="caption" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Spacing="5">
+              <TextBlock Text="触发阈值（token）" Classes="label" />
+              <TextBox Text="616000" FontSize="13" />
+              <TextBlock Text="不低于 500K；窗口小到装不下就不压" Classes="caption" />
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Spacing="5">
+              <TextBlock Text="目标水位（token）" Classes="label" />
+              <TextBox Text="500000" FontSize="13" />
+              <TextBlock Text="压到这里就停，留出回涨空间" Classes="caption" />
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="1" Spacing="5">
+              <TextBlock Text="保留最近组数" Classes="label" />
+              <TextBox Text="32" FontSize="13" />
+              <TextBlock Text="原样保留；两次压缩至少隔 30 分钟" Classes="caption" />
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="2" Spacing="5">
+              <TextBlock Text="压缩模型" Classes="label" />
+              <TextBox Text="小模型（auxiliary）" IsReadOnly="True" FontSize="13" />
+              <TextBlock Text="小模型不可用则压缩自动关闭，不退化成截断" Classes="caption" />
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- 预设指令：斜杠指令由 CommandRouter 直接处理，不经过 LLM -->
+      <StackPanel Spacing="4" Margin="2,6,0,0">
+        <TextBlock Text="预置指令" Classes="h2" />
+        <TextBlock Text="聊天框里直接发；由 CommandRouter 处理，不经过模型。未注册的 /xxx 按普通消息走。"
+                   Classes="caption" />
+      </StackPanel>
+
+      <ItemsControl ItemsSource="{Binding PresetCommands}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="6" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="items:PresetCommandItem">
+            <Border Classes="card" Padding="12,9">
+              <Grid ColumnDefinitions="220,*">
+                <Border Classes="chip" HorizontalAlignment="Left" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding Command}" Classes="mono" FontSize="11" />
+                </Border>
+                <StackPanel Grid.Column="1" Spacing="1">
+                  <TextBlock Text="{Binding Description}" FontSize="12.5" />
+                  <TextBlock Text="{Binding Note}" Classes="caption" />
+                </StackPanel>
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="10">
+          <TextBlock Text="轮转" Classes="h2" />
+          <Separator />
+          <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto" RowSpacing="8">
+            <TextBlock Text="跨天轮转时间" Classes="muted" />
+            <TextBlock Grid.Column="1" Text="04:00（新会话从这里续接）" Classes="caption"
+                       VerticalAlignment="Center" />
+            <TextBlock Grid.Row="1" Text="/new 与新会话" Classes="muted" />
+            <TextBlock Grid.Row="1" Grid.Column="1"
+                       Text="重读人设文件，压缩配置按当前值生效" Classes="caption"
+                       VerticalAlignment="Center" />
+          </Grid>
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

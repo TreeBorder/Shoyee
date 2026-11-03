@@ -1,0 +1,78 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             x:Class="Shoyee.Desktop.Views.Settings.ConfigFileSettingsView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="30,18,30,40" Spacing="16"
+                HorizontalAlignment="Stretch">
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="3">
+              <TextBlock Text="config.json" Classes="h2" />
+              <TextBlock Text="{Binding Runtime.StatusText}" Classes="caption" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                        VerticalAlignment="Top">
+              <Border Classes="badge mint" IsVisible="{Binding Runtime.IsLive}">
+                <TextBlock Text="实时" />
+              </Border>
+              <Border Classes="badge muted" IsVisible="{Binding Runtime.IsPlaceholder}">
+                <TextBlock Text="占位" />
+              </Border>
+              <ProgressBar IsIndeterminate="True" Width="40" Height="4"
+                           IsVisible="{Binding Runtime.IsLoading}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Grid>
+
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Text="{Binding Runtime.ConfigPath}" Classes="mono muted" FontSize="10.5"
+                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                       ToolTip.Tip="{Binding Runtime.ConfigPath}" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+              <Button Content="刷新" Classes="ghost" FontSize="11.5"
+                      Command="{Binding Runtime.RefreshCommand}" />
+              <Button Content="重载配置" Classes="primary" FontSize="11.5"
+                      Command="{Binding Runtime.ReloadConfigCommand}"
+                      ToolTip.Tip="config.reload：热更新已支持的部分，只影响新会话" />
+              <Button Content="复制" Classes="ghost" FontSize="11.5"
+                      Command="{Binding Runtime.CopyConfigCommand}" />
+              <Button Content="在编辑器中打开" Classes="ghost" FontSize="11.5"
+                      Command="{Binding Runtime.OpenPathCommand}"
+                      CommandParameter="{Binding Runtime.ConfigPath}" />
+            </StackPanel>
+          </Grid>
+
+          <Border IsVisible="{Binding Runtime.HasError}"
+                  Background="{DynamicResource CardHoverBrush}"
+                  CornerRadius="8" Padding="10,7">
+            <TextBlock Text="{Binding Runtime.ErrorText}" Classes="caption"
+                       Foreground="{DynamicResource DangerBrush}" TextWrapping="Wrap" />
+          </Border>
+
+          <Separator />
+
+          <Border Background="{DynamicResource ComposerBrush}"
+                  BorderBrush="{DynamicResource BorderSoftBrush}"
+                  BorderThickness="1" CornerRadius="12" Padding="14,12">
+            <ScrollViewer MaxHeight="520" VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Auto">
+              <SelectableTextBlock Text="{Binding Runtime.ConfigJson}"
+                                   Classes="mono" FontSize="11" LineHeight="17"
+                                   TextWrapping="NoWrap" />
+            </ScrollViewer>
+          </Border>
+
+          <TextBlock Text="连上 daemon 后显示 config.get 的生效配置（凭据只有环境变量名）；写入口下一步再接。"
+                     Classes="caption" IsVisible="{Binding Runtime.IsPlaceholder}" />
+          <TextBlock Text="只读。编辑整份配置走 config.set，保存后会提示哪些段要重启 daemon。"
+                     Classes="caption" IsVisible="{Binding Runtime.IsLive}" />
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

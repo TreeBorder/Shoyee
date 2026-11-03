@@ -1,0 +1,538 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:items="using:Shoyee.Desktop.ViewModels.Items"
+                    xmlns:controls="using:Shoyee.Desktop.Controls"
+                    xmlns:theming="using:Shoyee.Desktop.Theming">
+
+  <!-- 工作模式与 RP 气泡模式共用的消息模板：
+       用户靠右、助手靠左、工具行靠左缩进，不再居中。 -->
+  <DataTemplate x:Key="ChatMessageTemplate" x:DataType="items:ChatMessageItem">
+    <Grid Margin="0,0,0,12" controls:EntranceAnimation.Enabled="True">
+
+      <!-- 系统行：靠左，小字 -->
+      <StackPanel IsVisible="{Binding IsSystem}" Orientation="Horizontal" Spacing="7"
+                  Margin="42,1,0,7">
+        <Ellipse Width="4" Height="4" Fill="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding Text}" Classes="caption" />
+      </StackPanel>
+
+      <!-- 用户气泡：头像是右侧，名字/时间在气泡上方；操作条悬浮在气泡右上角 -->
+      <Grid IsVisible="{Binding IsUser}" ColumnDefinitions="*,42">
+        <StackPanel Grid.Column="0"
+                    Classes="msg-hover"
+                    Background="Transparent"
+                    HorizontalAlignment="{Binding BubbleHorizontalAlignment}"
+                    Spacing="5">
+          <StackPanel Classes="msg-meta" Orientation="Horizontal" Spacing="8"
+                      HorizontalAlignment="Right">
+            <TextBlock Text="你" FontSize="12" FontWeight="SemiBold" />
+            <TextBlock Text="{Binding Time}" Classes="caption" />
+          </StackPanel>
+
+          <Grid HorizontalAlignment="{Binding BubbleHorizontalAlignment}"
+                MaxWidth="{Binding BubbleMaxWidth}"
+                Margin="{Binding UserBubbleMargin}">
+            <Border Background="{DynamicResource AccentSoftBrush}"
+                    BorderBrush="{DynamicResource AccentBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16,6,16,16"
+                    Padding="14,10">
+              <controls:MarkdownBlock Markdown="{Binding Text}"
+                                      FontSize="13.5" LineHeight="21" />
+            </Border>
+
+            <Border Classes="msg-actions" Classes.status="{Binding HasCopyStatus}"
+                    IsVisible="{Binding HasMessageActions}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="6"
+                    Padding="1"
+                    CornerRadius="8"
+                    Background="{DynamicResource CardBrush}"
+                    BorderBrush="{DynamicResource BorderSoftBrush}"
+                    BorderThickness="1">
+              <StackPanel Orientation="Horizontal" Spacing="1" VerticalAlignment="Center">
+                <TextBlock Text="{Binding CopyStatus}" Classes="caption"
+                           IsVisible="{Binding HasCopyStatus}"
+                           Margin="5,0,3,0" VerticalAlignment="Center" />
+                <Button Classes="msg-action" IsVisible="{Binding CanCopy}"
+                        Command="{Binding CopyTextCommand}"
+                        ToolTip.Tip="复制文本">
+                  <PathIcon Data="{x:Static theming:IconGeometries.Copy}" />
+                </Button>
+                <Button Classes="msg-action" IsVisible="{Binding CanCopy}"
+                        Command="{Binding CopyMarkdownCommand}"
+                        ToolTip.Tip="复制 Markdown 原文">
+                  <PathIcon Data="{x:Static theming:IconGeometries.Code}" />
+                </Button>
+              </StackPanel>
+            </Border>
+          </Grid>
+        </StackPanel>
+
+        <Ellipse Grid.Column="1" Width="30" Height="30" Margin="10,0,2,0" VerticalAlignment="Top">
+          <Ellipse.Fill>
+            <ImageBrush Source="{DynamicResource UserAvatar}" Stretch="UniformToFill" />
+          </Ellipse.Fill>
+        </Ellipse>
+      </Grid>
+
+      <!-- 助手气泡 -->
+      <Grid IsVisible="{Binding IsAssistant}" ColumnDefinitions="32,*">
+        <Ellipse Width="30" Height="30" VerticalAlignment="Top">
+          <Ellipse.Fill>
+            <ImageBrush Source="{DynamicResource AgentAvatar}" Stretch="UniformToFill" AlignmentY="Top" />
+          </Ellipse.Fill>
+        </Ellipse>
+
+        <StackPanel Grid.Column="1" Classes="msg-hover" Background="Transparent"
+                    Margin="10,0,0,0" Spacing="5">
+          <StackPanel Classes="msg-meta" Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="{DynamicResource AgentDisplayName}" FontSize="12" FontWeight="SemiBold" />
+            <Border Classes="badge muted" IsVisible="{Binding ShowLaneBadge}" Padding="7,1">
+              <TextBlock Text="{Binding LaneName}" />
+            </Border>
+            <TextBlock Text="{Binding Time}" Classes="caption" />
+          </StackPanel>
+
+          <!-- 正文气泡 -->
+          <Grid IsVisible="{Binding HasText}"
+                HorizontalAlignment="{Binding BubbleHorizontalAlignment}"
+                MaxWidth="{Binding BubbleMaxWidth}"
+                Margin="{Binding AssistantBubbleMargin}">
+            <Border Background="{DynamicResource CardBrush}"
+                    BorderBrush="{DynamicResource BorderSoftBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6,16,16,16"
+                    Padding="14,10">
+              <StackPanel Spacing="8">
+                <controls:MarkdownBlock Markdown="{Binding Text}"
+                                        IsStreaming="{Binding IsStreaming}"
+                                        FontSize="13.5" LineHeight="22" />
+
+                <TextBlock Text="{Binding SpeakError}"
+                           IsVisible="{Binding HasSpeakError}"
+                           Classes="caption"
+                           Foreground="{DynamicResource DangerBrush}"
+                           TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
+
+            <Border Classes="msg-actions" Classes.status="{Binding HasCopyStatus}"
+                    IsVisible="{Binding HasMessageActions}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="6"
+                    Padding="1"
+                    CornerRadius="8"
+                    Background="{DynamicResource CardBrush}"
+                    BorderBrush="{DynamicResource BorderSoftBrush}"
+                    BorderThickness="1">
+              <StackPanel Orientation="Horizontal" Spacing="1" VerticalAlignment="Center">
+                <TextBlock Text="{Binding CopyStatus}" Classes="caption"
+                           IsVisible="{Binding HasCopyStatus}"
+                           Margin="5,0,3,0" VerticalAlignment="Center" />
+                <Button Classes="msg-action" IsVisible="{Binding CanSpeak}"
+                        Command="{Binding SpeakCommand}"
+                        ToolTip.Tip="朗读这条（合成语音后本地播放）">
+                  <Panel>
+                    <PathIcon Data="{x:Static theming:IconGeometries.Play}"
+                              IsVisible="{Binding !IsSpeaking}" />
+                    <PathIcon Data="{x:Static theming:IconGeometries.Stop}"
+                              IsVisible="{Binding IsSpeaking}" />
+                  </Panel>
+                </Button>
+                <Button Classes="msg-action" IsVisible="{Binding CanCopy}"
+                        Command="{Binding CopyTextCommand}"
+                        ToolTip.Tip="复制文本">
+                  <PathIcon Data="{x:Static theming:IconGeometries.Copy}" />
+                </Button>
+                <Button Classes="msg-action" IsVisible="{Binding CanCopy}"
+                        Command="{Binding CopyMarkdownCommand}"
+                        ToolTip.Tip="复制 Markdown 原文">
+                  <PathIcon Data="{x:Static theming:IconGeometries.Code}" />
+                </Button>
+              </StackPanel>
+            </Border>
+          </Grid>
+
+          <!-- 附件气泡：与正文分开，自己一块；多附件在泡内纵向排列 -->
+          <Grid IsVisible="{Binding HasAttachments}"
+                HorizontalAlignment="{Binding BubbleHorizontalAlignment}"
+                MaxWidth="{Binding BubbleMaxWidth}"
+                Margin="{Binding AssistantBubbleMargin}">
+            <Border Background="{DynamicResource CardBrush}"
+                    BorderBrush="{DynamicResource BorderSoftBrush}"
+                    BorderThickness="1"
+                    CornerRadius="6,16,16,16"
+                    Padding="10">
+              <ItemsControl ItemsSource="{Binding Attachments}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Spacing="6" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="items:AttachmentItem">
+                    <StackPanel Spacing="6" HorizontalAlignment="Left">
+                      <!-- 图片附件：真实缩略图，点击 Quick Look -->
+                      <Button Classes="msg-toggle"
+                              IsVisible="{Binding IsImage}"
+                              Command="{Binding PreviewCommand}"
+                              ToolTip.Tip="Quick Look 预览"
+                              HorizontalAlignment="Left">
+                        <Border CornerRadius="10"
+                                ClipToBounds="True"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1">
+                          <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                              <GradientStop Offset="0" Color="{DynamicResource PreviewAColor}" />
+                              <GradientStop Offset="1" Color="{DynamicResource PreviewBColor}" />
+                            </LinearGradientBrush>
+                          </Border.Background>
+                          <Panel>
+                            <!-- 按原图比例完整展示，和 RP 图片气泡一致，不再裁切 -->
+                            <Image Source="{Binding Image}"
+                                   IsVisible="{Binding HasImage}"
+                                   MaxWidth="{Binding ImageMaxWidth}"
+                                   MaxHeight="420"
+                                   Stretch="Uniform" />
+
+                            <Grid IsVisible="{Binding !HasImage}"
+                                  Width="260" Height="132">
+                              <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          Spacing="6">
+                                <TextBlock Text="◨" FontSize="26" Classes="accent"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="正在加载…" Classes="caption"
+                                           IsVisible="{Binding IsImageLoading}" />
+                                <TextBlock Text="图片加载失败" Classes="caption"
+                                           Foreground="{DynamicResource DangerBrush}"
+                                           IsVisible="{Binding ImageFailed}" />
+                              </StackPanel>
+                            </Grid>
+
+                            <Border HorizontalAlignment="Right" VerticalAlignment="Top"
+                                    Margin="6" Padding="5,2" CornerRadius="8"
+                                    Background="{DynamicResource ScrimBrush}">
+                              <TextBlock Text="⤢" FontSize="11"
+                                         Foreground="{DynamicResource TextDimBrush}" />
+                            </Border>
+                          </Panel>
+                        </Border>
+                      </Button>
+
+                      <!-- 音频 / 视频 / 普通文件：播放、预览、打开 -->
+                      <Border IsVisible="{Binding !IsImage}"
+                              Width="280"
+                              Padding="8"
+                              CornerRadius="10"
+                              Background="{DynamicResource CardHoverBrush}"
+                              BorderBrush="{DynamicResource BorderSoftBrush}"
+                              BorderThickness="1">
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="6">
+                          <Button Classes="icon" Width="28" Height="28"
+                                  IsVisible="{Binding IsAudio}"
+                                  Command="{Binding PlayCommand}"
+                                  ToolTip.Tip="播放 / 停止">
+                            <TextBlock Text="{Binding PlayGlyph}" FontSize="10" Classes="dim" />
+                          </Button>
+                          <Border Grid.Column="0" Width="28" Height="28" CornerRadius="8"
+                                  Background="{DynamicResource CardHoverBrush}"
+                                  IsVisible="{Binding !IsAudio}">
+                            <TextBlock Text="{Binding Glyph}" Classes="dim" FontSize="13"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                          </Border>
+
+                          <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding FileName}" FontSize="11.5"
+                                       TextTrimming="CharacterEllipsis" MaxLines="1" />
+                            <TextBlock Text="{Binding Meta}" Classes="caption" />
+                          </StackPanel>
+
+                          <Button Grid.Column="2" Classes="icon" Width="28" Height="28"
+                                  IsVisible="{Binding CanPreview}"
+                                  Command="{Binding PreviewCommand}"
+                                  ToolTip.Tip="Quick Look 预览">
+                            <TextBlock Text="⤢" FontSize="11" Classes="dim" />
+                          </Button>
+                          <Button Grid.Column="3" Classes="icon" Width="28" Height="28"
+                                  IsVisible="{Binding Exists}"
+                                  Command="{Binding OpenCommand}"
+                                  ToolTip.Tip="用默认程序打开">
+                            <TextBlock Text="↗" FontSize="10" Classes="dim" />
+                          </Button>
+                        </Grid>
+                      </Border>
+
+                      <TextBlock Text="{Binding ActionError}"
+                                 IsVisible="{Binding HasActionError}"
+                                 Classes="caption"
+                                 Foreground="{DynamicResource DangerBrush}"
+                                 TextWrapping="Wrap" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Border>
+          </Grid>
+        </StackPanel>
+      </Grid>
+
+      <!-- 本地文件气泡：正文里的本地文件链接独立成泡，点击打开或定位 -->
+      <Grid IsVisible="{Binding IsFileBubble}" ColumnDefinitions="32,*">
+        <Ellipse Width="30" Height="30" VerticalAlignment="Top">
+          <Ellipse.Fill>
+            <ImageBrush Source="{DynamicResource AgentAvatar}" Stretch="UniformToFill" AlignmentY="Top" />
+          </Ellipse.Fill>
+        </Ellipse>
+
+        <StackPanel Grid.Column="1" Margin="10,0,0,0" Spacing="5">
+          <StackPanel Classes="msg-meta" Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="{DynamicResource AgentDisplayName}" FontSize="12" FontWeight="SemiBold" />
+            <TextBlock Text="{Binding Time}" Classes="caption" />
+          </StackPanel>
+
+          <Button Classes="msg-toggle"
+                  Command="{Binding OpenFileCommand}"
+                  IsEnabled="{Binding CanOpenFile}"
+                  HorizontalAlignment="Left">
+            <Border Background="{DynamicResource CardBrush}"
+                    BorderBrush="{DynamicResource BorderSoftBrush}"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="10,8"
+                    Width="300">
+              <Grid ColumnDefinitions="Auto,*">
+                <Border Width="30" Height="30" CornerRadius="8"
+                        Background="{DynamicResource CardHoverBrush}">
+                  <TextBlock Text="{Binding FileGlyph}" Classes="dim" FontSize="13"
+                             HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding FileName}" FontSize="11.5"
+                             TextTrimming="CharacterEllipsis" />
+                  <TextBlock Text="{Binding FileMeta}" Classes="caption" />
+                  <TextBlock Text="{Binding FileActionTip}" Classes="caption" />
+                </StackPanel>
+              </Grid>
+            </Border>
+          </Button>
+        </StackPanel>
+      </Grid>
+
+      <!-- 图片气泡：Markdown 图片独立成泡，直接加载本地或远程图片 -->
+      <Grid IsVisible="{Binding IsImage}" ColumnDefinitions="32,*">
+        <Ellipse Width="30" Height="30" VerticalAlignment="Top">
+          <Ellipse.Fill>
+            <ImageBrush Source="{DynamicResource AgentAvatar}" Stretch="UniformToFill" AlignmentY="Top" />
+          </Ellipse.Fill>
+        </Ellipse>
+
+        <StackPanel Grid.Column="1" Margin="10,0,0,0" Spacing="5">
+          <StackPanel Classes="msg-meta" Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="{DynamicResource AgentDisplayName}" FontSize="12" FontWeight="SemiBold" />
+            <Border Classes="badge muted" IsVisible="{Binding ShowLaneBadge}" Padding="7,1">
+              <TextBlock Text="{Binding LaneName}" />
+            </Border>
+            <TextBlock Text="{Binding Time}" Classes="caption" />
+          </StackPanel>
+
+          <Border HorizontalAlignment="Left"
+                  CornerRadius="14"
+                  ClipToBounds="True"
+                  BorderBrush="{DynamicResource BorderSoftBrush}"
+                  BorderThickness="1"
+                  Background="{DynamicResource CardBrush}">
+            <Panel>
+              <Image Source="{Binding Image}"
+                     IsVisible="{Binding HasImage}"
+                     MaxWidth="{Binding ImageMaxWidth}"
+                     Stretch="Uniform" />
+
+              <Border IsVisible="{Binding IsImageLoading}"
+                      Width="240" Height="140"
+                      Background="{DynamicResource CardHoverBrush}">
+                <TextBlock Text="正在加载图片…" Classes="caption"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+
+              <Border IsVisible="{Binding ImageFailed}"
+                      Width="260" Padding="16,12"
+                      Background="{DynamicResource CardHoverBrush}">
+                <TextBlock Text="图片加载失败" Classes="caption" />
+              </Border>
+
+              <Button Classes="msg-toggle"
+                      HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                      Margin="8"
+                      IsVisible="{Binding HasImage}"
+                      Command="{Binding OpenImageCommand}"
+                      ToolTip.Tip="Quick Look 预览 / 打开原图">
+                <Border Background="{DynamicResource ScrimBrush}"
+                        Padding="8,4" CornerRadius="8">
+                  <TextBlock Text="⤢" FontSize="11"
+                             Foreground="{DynamicResource TextDimBrush}" />
+                </Border>
+              </Button>
+            </Panel>
+          </Border>
+        </StackPanel>
+      </Grid>
+
+      <!-- 思考过程：默认折叠，展开看完整思考；宽度跟助手气泡对齐 -->
+      <Border IsVisible="{Binding IsReasoning}"
+              HorizontalAlignment="{Binding BubbleHorizontalAlignment}"
+              MaxWidth="{Binding BubbleMaxWidth}"
+              Margin="{Binding ToolRowMargin}"
+              Classes="tool-row">
+        <StackPanel>
+          <Button Classes="msg-toggle" Command="{Binding ToggleExpandedCommand}"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto" VerticalAlignment="Center">
+              <TextBlock Text="💭" Classes="caption" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="{Binding ReasoningLabel}" FontSize="11"
+                         Classes="accent" VerticalAlignment="Center" Margin="7,0,0,0" />
+              <TextBlock Grid.Column="2" Text="{Binding Preview}" FontSize="11"
+                         Classes="mono muted" VerticalAlignment="Center"
+                         Margin="8,0,8,0" TextTrimming="CharacterEllipsis" MaxLines="1" />
+              <TextBlock Grid.Column="3" Text="{Binding ExpandGlyph}" Classes="caption"
+                         VerticalAlignment="Center" />
+            </Grid>
+          </Button>
+
+          <ScrollViewer IsVisible="{Binding IsExpanded}" MaxHeight="260"
+                        VerticalScrollBarVisibility="Auto"
+                        HorizontalScrollBarVisibility="Disabled">
+            <SelectableTextBlock Text="{Binding Text}"
+                                 Margin="0,8,0,2"
+                                 FontSize="11.5" LineHeight="18"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+          </ScrollViewer>
+        </StackPanel>
+      </Border>
+
+      <!-- 系统注入：像思考/工具一样折叠成过程行，默认隐藏；展开看完整内容 -->
+      <Border IsVisible="{Binding IsSystemInput}"
+              HorizontalAlignment="{Binding BubbleHorizontalAlignment}"
+              MaxWidth="{Binding BubbleMaxWidth}"
+              Margin="{Binding ToolRowMargin}"
+              Classes="tool-row">
+        <StackPanel>
+          <Button Classes="msg-toggle" Command="{Binding ToggleExpandedCommand}"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto" VerticalAlignment="Center">
+              <TextBlock Text="ⓘ" Classes="caption" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="{Binding SystemInputLabel}" FontSize="11"
+                         Classes="accent" VerticalAlignment="Center" Margin="7,0,0,0" />
+              <TextBlock Grid.Column="2" Text="{Binding Preview}" FontSize="11"
+                         Classes="mono muted" VerticalAlignment="Center"
+                         Margin="8,0,8,0" TextTrimming="CharacterEllipsis" MaxLines="1" />
+              <TextBlock Grid.Column="3" Text="{Binding ExpandGlyph}" Classes="caption"
+                         VerticalAlignment="Center" />
+            </Grid>
+          </Button>
+
+          <ScrollViewer IsVisible="{Binding IsExpanded}" MaxHeight="260"
+                        VerticalScrollBarVisibility="Auto"
+                        HorizontalScrollBarVisibility="Disabled">
+            <SelectableTextBlock Text="{Binding Text}"
+                                 Margin="0,8,0,2"
+                                 FontSize="11.5" LineHeight="18"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+          </ScrollViewer>
+        </StackPanel>
+      </Border>
+
+      <!-- 工具过程行：默认折叠，展开看完整参数与返回结果；宽度跟助手气泡对齐 -->
+      <Border IsVisible="{Binding IsTool}"
+              HorizontalAlignment="{Binding BubbleHorizontalAlignment}"
+              MaxWidth="{Binding BubbleMaxWidth}"
+              Margin="{Binding ToolRowMargin}"
+              Classes="tool-row">
+        <StackPanel>
+          <Button Classes="msg-toggle" Command="{Binding ToggleExpandedCommand}"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto" VerticalAlignment="Center">
+              <TextBlock Text="⚙" Classes="caption" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="{Binding ToolLabel}" FontSize="11"
+                         Classes="accent" VerticalAlignment="Center" Margin="7,0,0,0" />
+              <TextBlock Grid.Column="2" Text="{Binding Preview}" FontSize="11"
+                         Classes="mono muted" VerticalAlignment="Center"
+                         Margin="8,0,8,0" TextTrimming="CharacterEllipsis" MaxLines="1" />
+              <TextBlock Grid.Column="3" Text="{Binding ExpandGlyph}" Classes="caption"
+                         VerticalAlignment="Center" />
+            </Grid>
+          </Button>
+
+          <StackPanel IsVisible="{Binding IsExpanded}" Spacing="5" Margin="0,8,0,2">
+            <TextBlock Text="调用参数" Classes="label" />
+            <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+              <SelectableTextBlock Text="{Binding DetailText}" Classes="mono"
+                                   FontSize="11" LineHeight="17"
+                                   Foreground="{DynamicResource TextDimBrush}" />
+            </ScrollViewer>
+            <TextBlock Text="返回结果" Classes="label" Margin="0,4,0,0" />
+            <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+              <SelectableTextBlock Text="{Binding ResultText}" Classes="mono"
+                                   FontSize="11" LineHeight="17"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+            </ScrollViewer>
+          </StackPanel>
+
+          <!-- 异步结果（camera / gallery 出的图）挂回这一行，不另补消息；折叠时也保留图片 -->
+          <ItemsControl IsVisible="{Binding HasAttachments}"
+                        ItemsSource="{Binding Attachments}"
+                        Margin="0,8,0,2">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="6" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="items:AttachmentItem">
+                <Button Classes="msg-toggle"
+                        IsVisible="{Binding IsImage}"
+                        Command="{Binding PreviewCommand}"
+                        ToolTip.Tip="Quick Look 预览"
+                        HorizontalAlignment="Left">
+                  <Border CornerRadius="10"
+                          ClipToBounds="True"
+                          BorderBrush="{DynamicResource BorderBrush}"
+                          BorderThickness="1"
+                          Background="{DynamicResource CardBrush}">
+                    <Panel>
+                      <Image Source="{Binding Image}"
+                             IsVisible="{Binding HasImage}"
+                             MaxWidth="{Binding ImageMaxWidth}"
+                             MaxHeight="420"
+                             Stretch="Uniform" />
+
+                      <Border IsVisible="{Binding !HasImage}"
+                              Width="220" Height="120"
+                              Background="{DynamicResource CardHoverBrush}">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Spacing="6">
+                          <TextBlock Text="◨" FontSize="24" Classes="accent"
+                                     HorizontalAlignment="Center" />
+                          <TextBlock Text="正在加载图片…" Classes="caption"
+                                     IsVisible="{Binding IsImageLoading}" />
+                          <TextBlock Text="图片加载失败" Classes="caption"
+                                     Foreground="{DynamicResource DangerBrush}"
+                                     IsVisible="{Binding ImageFailed}" />
+                        </StackPanel>
+                      </Border>
+                    </Panel>
+                  </Border>
+                </Button>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+    </Grid>
+  </DataTemplate>
+
+</ResourceDictionary>

@@ -1,0 +1,126 @@
+<Solution>
+  <!--
+    Folder 的 Name 只是解决方案里的虚拟分组（Rider / VS 侧边栏），与磁盘目录无关；Project Path 是真实路径。
+    编号只加在**顶层**（层 = 依赖方向）；子层是平级的，不再编号，靠名字自己说清是什么。
+      01 Foundation  契约 + 存储，不依赖任何业务
+      02 Capabilities 外部能力（一家供应商一个项目）
+      03 Runtime      会话/检索/工具面/agent
+      04 Host         进程与传输
+    注意：Folder 只能平铺，层级靠 Name 的路径段表达。
+  -->
+  <Folder Name="/01-Foundation/">
+    <Project Path="src/Shoyee.Contracts/Shoyee.Contracts.csproj" />
+    <Project Path="src/Shoyee.Storage.Abstractions/Shoyee.Storage.Abstractions.csproj" />
+    <Project Path="src/Shoyee.Storage/Shoyee.Storage.csproj" />
+    <Project Path="src/Shoyee.Storage.Sqlite/Shoyee.Storage.Sqlite.csproj" />
+  </Folder>
+  <Folder Name="/02-Capabilities/Web/">
+    <Project Path="src/Shoyee.Web/Shoyee.Web.csproj" />
+    <Project Path="src/Shoyee.Web.DeepSeek/Shoyee.Web.DeepSeek.csproj" />
+  </Folder>
+  <Folder Name="/02-Capabilities/Notes/">
+    <Project Path="src/Shoyee.Notes/Shoyee.Notes.csproj" />
+    <Project Path="src/Shoyee.Notes.Obsidian/Shoyee.Notes.Obsidian.csproj" />
+  </Folder>
+  <Folder Name="/02-Capabilities/Voice/">
+    <Project Path="src/Shoyee.Voice/Shoyee.Voice.csproj" />
+    <Project Path="src/Shoyee.Voice.Mimo/Shoyee.Voice.Mimo.csproj" />
+    <Project Path="src/Shoyee.Voice.Apple/Shoyee.Voice.Apple.csproj" />
+  </Folder>
+  <Folder Name="/02-Capabilities/Photo/">
+    <Project Path="src/Shoyee.Photo/Shoyee.Photo.csproj" />
+    <Project Path="src/Shoyee.Photo.Comfy/Shoyee.Photo.Comfy.csproj" />
+  </Folder>
+  <Folder Name="/02-Capabilities/Channels/">
+    <Project Path="src/Shoyee.Channels/Shoyee.Channels.csproj" />
+    <Project Path="src/Shoyee.Channels.Mattermost/Shoyee.Channels.Mattermost.csproj" />
+    <Project Path="src/Shoyee.Channels.WeChat/Shoyee.Channels.WeChat.csproj" />
+  </Folder>
+  <Folder Name="/02-Capabilities/Notify/">
+    <Project Path="src/Shoyee.Notify.ServerChan/Shoyee.Notify.ServerChan.csproj" />
+    <Project Path="src/Shoyee.Notify.Email/Shoyee.Notify.Email.csproj" />
+    <Project Path="src/Shoyee.Notify.System/Shoyee.Notify.System.csproj" />
+  </Folder>
+  <Folder Name="/03-Runtime/Conversation/">
+    <Project Path="src/Shoyee.Sessions/Shoyee.Sessions.csproj" />
+    <Project Path="src/Shoyee.Memory/Shoyee.Memory.csproj" />
+  </Folder>
+  <Folder Name="/03-Runtime/Tooling/">
+    <Project Path="src/Shoyee.Tools/Shoyee.Tools.csproj" />
+  </Folder>
+  <Folder Name="/03-Runtime/Agent/">
+    <Project Path="src/Shoyee.Agent/Shoyee.Agent.csproj" />
+  </Folder>
+  <Folder Name="/03-Runtime/Proactive/">
+    <Project Path="src/Shoyee.Proactive/Shoyee.Proactive.csproj" />
+  </Folder>
+  <Folder Name="/03-Runtime/Handlers/">
+    <Project Path="src/Shoyee.Handlers/Shoyee.Handlers.csproj" />
+  </Folder>
+  <Folder Name="/04-Host/Transport/">
+    <Project Path="src/Shoyee.Client/Shoyee.Client.csproj" />
+    <Project Path="src/Shoyee.Gateway/Shoyee.Gateway.csproj" />
+  </Folder>
+  <Folder Name="/04-Host/Daemon/">
+    <Project Path="src/Shoyee.Daemon/Shoyee.Daemon.csproj" />
+  </Folder>
+  <Folder Name="/04-Host/Client/">
+    <Project Path="src/Shoyee.Ctl/Shoyee.Ctl.csproj" />
+    <Project Path="src/Shoyee.Desktop/Shoyee.Desktop.csproj" />
+  </Folder>
+
+  <!-- 测试与被测层同组同号，找测试不用再想它在哪一层 -->
+  <Folder Name="/tests/01-Foundation/">
+    <Project Path="tests/Shoyee.Storage.Tests/Shoyee.Storage.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/02-Capabilities/Web/">
+    <Project Path="tests/Shoyee.Web.DeepSeek.Tests/Shoyee.Web.DeepSeek.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/02-Capabilities/Notes/">
+    <Project Path="tests/Shoyee.Notes.Obsidian.Tests/Shoyee.Notes.Obsidian.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/02-Capabilities/Voice/">
+    <Project Path="tests/Shoyee.Voice.Mimo.Tests/Shoyee.Voice.Mimo.Tests.csproj" />
+    <Project Path="tests/Shoyee.Voice.Apple.Tests/Shoyee.Voice.Apple.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/02-Capabilities/Photo/">
+    <Project Path="tests/Shoyee.Photo.Tests/Shoyee.Photo.Tests.csproj" />
+    <Project Path="tests/Shoyee.Photo.Comfy.Tests/Shoyee.Photo.Comfy.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/02-Capabilities/Channels/">
+    <Project Path="tests/Shoyee.Channels.Tests/Shoyee.Channels.Tests.csproj" />
+    <Project Path="tests/Shoyee.Channels.Mattermost.Tests/Shoyee.Channels.Mattermost.Tests.csproj" />
+    <Project Path="tests/Shoyee.Channels.WeChat.Tests/Shoyee.Channels.WeChat.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/02-Capabilities/Notify/">
+    <Project Path="tests/Shoyee.Notify.ServerChan.Tests/Shoyee.Notify.ServerChan.Tests.csproj" />
+    <Project Path="tests/Shoyee.Notify.Email.Tests/Shoyee.Notify.Email.Tests.csproj" />
+    <Project Path="tests/Shoyee.Notify.System.Tests/Shoyee.Notify.System.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/03-Runtime/Conversation/">
+    <Project Path="tests/Shoyee.Sessions.Tests/Shoyee.Sessions.Tests.csproj" />
+    <Project Path="tests/Shoyee.Memory.Tests/Shoyee.Memory.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/03-Runtime/Tooling/">
+    <Project Path="tests/Shoyee.Tools.Tests/Shoyee.Tools.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/03-Runtime/Agent/">
+    <Project Path="tests/Shoyee.Agent.Tests/Shoyee.Agent.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/03-Runtime/Proactive/">
+    <Project Path="tests/Shoyee.Proactive.Tests/Shoyee.Proactive.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/03-Runtime/Handlers/">
+    <Project Path="tests/Shoyee.Handlers.Tests/Shoyee.Handlers.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/04-Host/Transport/">
+    <Project Path="tests/Shoyee.Gateway.Tests/Shoyee.Gateway.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/04-Host/Daemon/">
+    <Project Path="tests/Shoyee.Daemon.Tests/Shoyee.Daemon.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/04-Host/Client/">
+    <Project Path="tests/Shoyee.Ctl.Tests/Shoyee.Ctl.Tests.csproj" />
+    <Project Path="tests/Shoyee.Desktop.Tests/Shoyee.Desktop.Tests.csproj" />
+  </Folder>
+</Solution>

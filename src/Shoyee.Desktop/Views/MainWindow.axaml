@@ -1,0 +1,375 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Shoyee.Desktop.ViewModels"
+        xmlns:items="using:Shoyee.Desktop.ViewModels.Items"
+        xmlns:controls="using:Shoyee.Desktop.Controls"
+        xmlns:views="using:Shoyee.Desktop.Views"
+        xmlns:theming="using:Shoyee.Desktop.Theming"
+        x:Class="Shoyee.Desktop.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="Shoyee"
+        Width="1200" Height="800"
+        MinWidth="980" MinHeight="660"
+        WindowStartupLocation="CenterScreen"
+        Icon="/Assets/app.png"
+        Background="{DynamicResource BgBrush}"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="40">
+
+  <Grid>
+
+    <!-- ================= 工作台：左侧导航 + 内容 ================= -->
+    <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding IsWorkMode}">
+
+      <!-- 左栏：背景一直顶到窗口最上面（红绿灯盖在这层背景上） -->
+      <Border Grid.Column="0"
+              Width="{Binding SidebarWidth}"
+              Background="{DynamicResource BgRaisedBrush}"
+              BorderBrush="{DynamicResource BorderSoftBrush}"
+              BorderThickness="0,0,1,0">
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="10,0,10,10">
+
+          <!-- 品牌（顶部留出红绿灯高度，整块可拖）；logo 用 App 图标，原始 SVG 在 Assets/logo.svg -->
+          <!-- 固定最小高度：折叠后只剩 32px logo 时，分割线仍与右侧标题栏对齐 -->
+          <Border Grid.Row="0" MinHeight="95" Background="Transparent"
+                  PointerPressed="TitleBar_PointerPressed">
+            <StackPanel Classes="brand" Classes.collapsed="{Binding IsSidebarCollapsed}"
+                        Orientation="Horizontal" Spacing="10" Margin="8,46,8,12">
+              <Image Source="/Assets/app.png" Width="32" Height="32"
+                     VerticalAlignment="Center"
+                     RenderOptions.BitmapInterpolationMode="HighQuality" />
+              <StackPanel VerticalAlignment="Center" Spacing="1"
+                          IsVisible="{Binding !IsSidebarCollapsed}">
+                <TextBlock Text="{Binding BrandName}" FontSize="14" FontWeight="SemiBold"
+                           TextTrimming="CharacterEllipsis" MaxLines="1" />
+                <TextBlock Text="{Binding BrandTagline}" Classes="muted" FontSize="11"
+                           TextTrimming="CharacterEllipsis" MaxLines="1" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- 与右侧对话标题栏的分割线对齐（标题栏底部在 y≈108） -->
+          <Separator Grid.Row="1" Margin="6,13,6,7" />
+
+          <!-- 菜单 -->
+          <StackPanel Grid.Row="2" Spacing="2" Margin="0,0,0,10">
+            <Button Classes="side-nav" Classes.collapsed="{Binding IsSidebarCollapsed}"
+                    Command="{Binding NewChatCommand}" ToolTip.Tip="新对话">
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <PathIcon Data="{x:Static theming:IconGeometries.NewChat}" VerticalAlignment="Center" />
+                <TextBlock Text="新对话" VerticalAlignment="Center"
+                           IsVisible="{Binding !IsSidebarCollapsed}" />
+              </StackPanel>
+            </Button>
+            <Button Classes="side-nav" Classes.collapsed="{Binding IsSidebarCollapsed}"
+                    Command="{Binding ShowRoleplayCommand}" ToolTip.Tip="聊天模式">
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <PathIcon Data="{x:Static theming:IconGeometries.Chat}" VerticalAlignment="Center" />
+                <TextBlock Text="聊天模式" VerticalAlignment="Center"
+                           IsVisible="{Binding !IsSidebarCollapsed}" />
+              </StackPanel>
+            </Button>
+
+            <Separator Margin="10,7" />
+
+            <Button Classes="side-nav" Classes.collapsed="{Binding IsSidebarCollapsed}"
+                    Classes.active="{Binding IsCronSection}"
+                    Command="{Binding OpenCronCommand}" ToolTip.Tip="定时任务">
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <PathIcon Data="{x:Static theming:IconGeometries.Clock}" VerticalAlignment="Center" />
+                <TextBlock Text="定时任务" VerticalAlignment="Center"
+                           IsVisible="{Binding !IsSidebarCollapsed}" />
+              </StackPanel>
+            </Button>
+            <Button Classes="side-nav" Classes.collapsed="{Binding IsSidebarCollapsed}"
+                    Classes.active="{Binding IsBoardSection}"
+                    Command="{Binding OpenBoardCommand}" ToolTip.Tip="任务看板">
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <PathIcon Data="{x:Static theming:IconGeometries.Board}" VerticalAlignment="Center" />
+                <TextBlock Text="任务看板" VerticalAlignment="Center"
+                           IsVisible="{Binding !IsSidebarCollapsed}" />
+              </StackPanel>
+            </Button>
+            <Button Classes="side-nav" Classes.collapsed="{Binding IsSidebarCollapsed}"
+                    Classes.active="{Binding IsFavoritesSection}"
+                    Command="{Binding OpenFavoritesCommand}" ToolTip.Tip="收藏对话">
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <PathIcon Data="{x:Static theming:IconGeometries.Star}" VerticalAlignment="Center" />
+                <TextBlock Text="收藏对话" VerticalAlignment="Center"
+                           IsVisible="{Binding !IsSidebarCollapsed}" />
+              </StackPanel>
+            </Button>
+          </StackPanel>
+
+          <!-- 对话列表（折叠时隐藏） -->
+          <Grid Grid.Row="3" RowDefinitions="Auto,Auto,*"
+                IsVisible="{Binding !IsSidebarCollapsed}">
+            <StackPanel Grid.Row="0" Spacing="8">
+              <Separator Margin="10,0,10,0" />
+              <TextBlock Text="对话" Classes="label" Margin="10,0,0,6" />
+            </StackPanel>
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+              <TextBox Classes="search" FontSize="11.5" PlaceholderText="搜索对话…" />
+              <Button Grid.Column="1" Content="{Binding Work.SessionFilterLabel}"
+                      Classes="pill" Margin="6,0,0,0" IsTabStop="False" ToolTip.Tip="按创建时间筛选">
+                <Button.Flyout>
+                  <Flyout Placement="Bottom">
+                    <Border Background="{DynamicResource PanelBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1" CornerRadius="12" Padding="6,5"
+                            MinWidth="130">
+                      <StackPanel Spacing="2">
+                        <Button Content="全部时间" Classes="theme-option"
+                                Command="{Binding Work.SetSessionFilterCommand}" CommandParameter="All" />
+                        <Button Content="今天" Classes="theme-option"
+                                Command="{Binding Work.SetSessionFilterCommand}" CommandParameter="Today" />
+                        <Button Content="近 7 天" Classes="theme-option"
+                                Command="{Binding Work.SetSessionFilterCommand}" CommandParameter="Last7Days" />
+                        <Button Content="近 30 天" Classes="theme-option"
+                                Command="{Binding Work.SetSessionFilterCommand}" CommandParameter="Last30Days" />
+                      </StackPanel>
+                    </Border>
+                  </Flyout>
+                </Button.Flyout>
+              </Button>
+            </Grid>
+
+            <ListBox Grid.Row="2"
+                     ItemsSource="{Binding Work.VisibleSessions}"
+                     SelectedItem="{Binding Work.SelectedSession}"
+                     SelectionMode="Single">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="items:SessionItem">
+                  <Border Padding="10,8" ToolTip.Tip="{Binding HoverPreview}" ToolTip.ShowDelay="250">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                        <TextBlock Text="✦" FontSize="10" Classes="accent"
+                                   IsVisible="{Binding HasPin}" VerticalAlignment="Center"
+                                   ToolTip.Tip="置顶" />
+                        <controls:ChannelIcon Channel="{Binding Source}"
+                                              Width="16" Height="16"
+                                              IsVisible="{Binding HasChannelTag}"
+                                              VerticalAlignment="Center"
+                                              ToolTip.Tip="{Binding Source}" />
+                        <TextBlock Text="{Binding Title}"
+                                   Classes="nav-title"
+                                   FontSize="12.5" FontWeight="SemiBold"
+                                   TextTrimming="CharacterEllipsis" MaxLines="1" />
+                      </StackPanel>
+
+                      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="5"
+                                  VerticalAlignment="Center">
+                        <Border Classes="badge" IsVisible="{Binding HasUnread}">
+                          <TextBlock Text="{Binding UnreadText}" />
+                        </Border>
+                        <TextBlock Text="{Binding Time}" Classes="caption" />
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Grid>
+
+          <!-- 左下角：设置居左；明暗 / 折叠居右；折叠后三个按钮往上排 -->
+          <Grid Grid.Row="4" RowDefinitions="Auto,Auto,Auto"
+                ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,8,0,0">
+            <Button Grid.Column="0" Classes="side"
+                    ToolTip.Tip="设置">
+              <PathIcon Data="{x:Static theming:IconGeometries.Gear}" />
+              <Button.Flyout>
+                <Flyout Placement="Top">
+                  <Border Background="{DynamicResource PanelBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}"
+                          BorderThickness="1" CornerRadius="14" Padding="10" Width="272">
+                    <StackPanel Spacing="2">
+
+                      <!-- 身份（点击进本机 · 资料与头像） -->
+                      <Button Classes="menu-item" Padding="8,8"
+                              Command="{Binding OpenSettingsPageCommand}" CommandParameter="local.profile">
+                        <Grid ColumnDefinitions="Auto,*">
+                          <Ellipse Width="38" Height="38">
+                            <Ellipse.Fill>
+                              <ImageBrush Source="{DynamicResource AgentAvatar}"
+                                          Stretch="UniformToFill" AlignmentY="Top" />
+                            </Ellipse.Fill>
+                          </Ellipse>
+                          <StackPanel Grid.Column="1" Margin="10,0,0,0" Spacing="1"
+                                      VerticalAlignment="Center">
+                            <TextBlock Text="{Binding BrandName}" FontSize="13.5"
+                                       FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding BrandTagline}" Classes="caption"
+                                       TextTrimming="CharacterEllipsis" MaxLines="1" />
+                          </StackPanel>
+                        </Grid>
+                      </Button>
+
+                      <Separator Margin="6,4" />
+
+                      <TextBlock Text="主题" Classes="label" Margin="10,4,0,6" />
+                      <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6" Margin="4,0,4,4">
+                        <Button Grid.Column="0" Classes="seg"
+                                Classes.active="{Binding IsLightTheme}"
+                                Command="{Binding SetThemeCommand}" CommandParameter="Light">
+                          <StackPanel Spacing="5">
+                            <PathIcon Data="{x:Static theming:IconGeometries.Sun}" />
+                            <TextBlock Text="明亮" FontSize="10.5" HorizontalAlignment="Center" />
+                          </StackPanel>
+                        </Button>
+                        <Button Grid.Column="1" Classes="seg"
+                                Classes.active="{Binding IsDarkTheme}"
+                                Command="{Binding SetThemeCommand}" CommandParameter="Dark">
+                          <StackPanel Spacing="5">
+                            <PathIcon Data="{x:Static theming:IconGeometries.Moon}" />
+                            <TextBlock Text="深色" FontSize="10.5" HorizontalAlignment="Center" />
+                          </StackPanel>
+                        </Button>
+                        <Button Grid.Column="2" Classes="seg"
+                                Classes.active="{Binding IsSystemTheme}"
+                                Command="{Binding SetThemeCommand}" CommandParameter="System">
+                          <StackPanel Spacing="5">
+                            <PathIcon Data="{x:Static theming:IconGeometries.Monitor}" />
+                            <TextBlock Text="跟随系统" FontSize="10.5" HorizontalAlignment="Center" />
+                          </StackPanel>
+                        </Button>
+                      </Grid>
+
+                      <StackPanel Spacing="4" Margin="4,6,4,4">
+                        <TextBlock Text="主题色" Classes="label" Margin="6,0,0,2" />
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <Button Classes="swatch" Classes.active="{Binding IsRose}"
+                                  Command="{Binding SetAccentCommand}" CommandParameter="Rose" ToolTip.Tip="藕粉">
+                            <Border Width="14" Height="14" CornerRadius="7" Background="#E8A2B4" />
+                          </Button>
+                          <Button Classes="swatch" Classes.active="{Binding IsBlue}"
+                                  Command="{Binding SetAccentCommand}" CommandParameter="Blue" ToolTip.Tip="雾蓝">
+                            <Border Width="14" Height="14" CornerRadius="7" Background="#8FB8E8" />
+                          </Button>
+                          <Button Classes="swatch" Classes.active="{Binding IsTeal}"
+                                  Command="{Binding SetAccentCommand}" CommandParameter="Teal" ToolTip.Tip="青绿">
+                            <Border Width="14" Height="14" CornerRadius="7" Background="#8FD0C6" />
+                          </Button>
+                          <Button Classes="swatch" Classes.active="{Binding IsAmber}"
+                                  Command="{Binding SetAccentCommand}" CommandParameter="Amber" ToolTip.Tip="暖金">
+                            <Border Width="14" Height="14" CornerRadius="7" Background="#E8C27E" />
+                          </Button>
+                          <Button Classes="swatch" Classes.active="{Binding IsViolet}"
+                                  Command="{Binding SetAccentCommand}" CommandParameter="Violet" ToolTip.Tip="淡紫">
+                            <Border Width="14" Height="14" CornerRadius="7" Background="#B9A0E8" />
+                          </Button>
+                          <Button Classes="swatch" Classes.active="{Binding IsSlate}"
+                                  Command="{Binding SetAccentCommand}" CommandParameter="Slate" ToolTip.Tip="石墨">
+                            <Border Width="14" Height="14" CornerRadius="7" Background="#A9B4C4" />
+                          </Button>
+                        </StackPanel>
+                      </StackPanel>
+
+                      <Separator Margin="6,6" />
+
+                      <Button Classes="menu-item"
+                              Command="{Binding OpenImportCommand}">
+                        <StackPanel Orientation="Horizontal">
+                          <PathIcon Data="{x:Static theming:IconGeometries.Document}" />
+                          <TextBlock Text="会话导入" VerticalAlignment="Center" />
+                        </StackPanel>
+                      </Button>
+
+                      <Button Classes="menu-item"
+                              Command="{Binding OpenSettingsCommand}">
+                        <StackPanel Orientation="Horizontal">
+                          <PathIcon Data="{x:Static theming:IconGeometries.Gear}" />
+                          <TextBlock Text="设置页" VerticalAlignment="Center" />
+                        </StackPanel>
+                      </Button>
+
+                      <Separator Margin="6,6" />
+
+                      <!-- 守护进程状态（hello / ping / 重连的实时状态） -->
+                      <Grid ColumnDefinitions="Auto,*" Margin="10,4,10,6"
+                            ToolTip.Tip="{Binding ConnectionText}">
+                        <Panel VerticalAlignment="Center">
+                          <Ellipse Width="7" Height="7" Fill="{DynamicResource GoldBrush}"
+                                   IsVisible="{Binding !IsConnected}" />
+                          <Ellipse Width="7" Height="7" Fill="{DynamicResource MintBrush}"
+                                   IsVisible="{Binding IsConnected}" />
+                        </Panel>
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0" Spacing="1">
+                          <TextBlock Text="守护进程" Classes="label" />
+                          <TextBlock Text="{Binding ConnectionText}" Classes="caption"
+                                     TextTrimming="CharacterEllipsis" MaxLines="1" />
+                        </StackPanel>
+                      </Grid>
+
+                    </StackPanel>
+                  </Border>
+                </Flyout>
+              </Button.Flyout>
+            </Button>
+
+            <Button Classes="side bottom-theme"
+                    Classes.collapsed="{Binding IsSidebarCollapsed}"
+                    Command="{Binding ToggleThemeCommand}"
+                    ToolTip.Tip="{Binding ThemeToggleTip}">
+              <PathIcon Data="{Binding ThemeToggleIcon}" />
+            </Button>
+
+            <Button Classes="side bottom-collapse"
+                    Classes.collapsed="{Binding IsSidebarCollapsed}"
+                    Command="{Binding ToggleSidebarCommand}"
+                    ToolTip.Tip="{Binding SidebarCollapseTip}">
+              <PathIcon Data="{Binding SidebarCollapseIcon}" />
+            </Button>
+          </Grid>
+
+        </Grid>
+      </Border>
+
+      <!-- 右侧内容：对话或占位页 -->
+      <Grid Grid.Column="1" Margin="0,40,0,0">
+        <ContentControl Content="{Binding Work}" IsVisible="{Binding IsChatSection}" />
+
+        <ContentControl Content="{Binding Cron}" IsVisible="{Binding IsCronSection}" />
+
+        <Border IsVisible="{Binding IsPlaceholderSection}"
+                Classes="card"
+                MaxWidth="560" Padding="28"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Margin="40">
+          <StackPanel Spacing="12">
+            <Border Width="46" Height="46" CornerRadius="14"
+                    Background="{DynamicResource AccentSoftBrush}"
+                    HorizontalAlignment="Left">
+              <TextBlock Text="{Binding PlaceholderGlyph}" FontSize="20"
+                         Foreground="{DynamicResource AccentBrush}" Classes="accent"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="{Binding PlaceholderTitle}" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="{Binding PlaceholderHint}" Classes="dim" LineHeight="22" />
+            <Border Classes="chip" HorizontalAlignment="Left">
+              <TextBlock Text="占位页 · 数据面下一轮接" Classes="caption" />
+            </Border>
+            <Button Content="回到对话" Classes="ghost"
+                    HorizontalAlignment="Left" Command="{Binding BackToChatCommand}" />
+          </StackPanel>
+        </Border>
+      </Grid>
+
+    </Grid>
+
+    <!-- ================= 角色模式：独立全屏页 ================= -->
+    <ContentControl Content="{Binding Roleplay}" IsVisible="{Binding IsRoleplayMode}" />
+
+    <Button Content="‹  工作台"
+            Classes="floating"
+            IsVisible="{Binding IsRoleplayMode}"
+            HorizontalAlignment="Left" VerticalAlignment="Top"
+            Margin="20,52,0,0"
+            Command="{Binding ShowWorkCommand}" />
+
+    <!-- 全窗口顶部拖动条：透明，不画任何东西；红绿灯由系统保留 -->
+    <Border Height="40" VerticalAlignment="Top" Background="Transparent"
+            PointerPressed="TitleBar_PointerPressed" />
+
+  </Grid>
+</Window>

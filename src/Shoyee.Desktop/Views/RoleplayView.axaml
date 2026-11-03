@@ -1,0 +1,352 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:items="using:Shoyee.Desktop.ViewModels.Items"
+             xmlns:theming="using:Shoyee.Desktop.Theming"
+             x:Class="Shoyee.Desktop.Views.RoleplayView"
+             x:DataType="vm:RoleplayViewModel">
+
+  <Grid>
+
+    <!-- ================= 立绘（沉浸式） ================= -->
+    <Grid IsVisible="{Binding IsPortraitMode}"
+          Background="{DynamicResource StageWashBrush}" ClipToBounds="True">
+
+      <!-- 背景光斑 -->
+      <Ellipse Width="560" Height="560"
+               HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-190,-130,0"
+               Opacity="0.55">
+        <Ellipse.Fill>
+          <RadialGradientBrush>
+            <GradientStop Offset="0" Color="{DynamicResource AccentGlowColor}" />
+            <GradientStop Offset="1" Color="{DynamicResource AccentGlowFadeColor}" />
+          </RadialGradientBrush>
+        </Ellipse.Fill>
+      </Ellipse>
+      <Ellipse Width="440" Height="440"
+               HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="-150,0,0,-140"
+               Opacity="0.32">
+        <Ellipse.Fill>
+          <RadialGradientBrush>
+            <GradientStop Offset="0" Color="#409BC8C0" />
+            <GradientStop Offset="1" Color="#009BC8C0" />
+          </RadialGradientBrush>
+        </Ellipse.Fill>
+      </Ellipse>
+
+      <Image x:Name="PortraitImage"
+             Source="/Assets/portrait.png"
+             Stretch="Uniform"
+             HorizontalAlignment="Left" VerticalAlignment="Bottom"
+             Margin="0,0,0,150" />
+
+      <!-- 右上：视图切换（场景与状态收进输入框旁的信息按钮） -->
+      <StackPanel Orientation="Horizontal" Spacing="8"
+                  HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,54,24,0">
+        <Border Background="{DynamicResource CardBrush}"
+                BorderBrush="{DynamicResource BorderSoftBrush}"
+                BorderThickness="1" CornerRadius="999" Padding="3">
+          <StackPanel Orientation="Horizontal" Spacing="2">
+            <Button Classes="pill active" ToolTip.Tip="立绘">
+              <PathIcon Data="{x:Static theming:IconGeometries.Image}" />
+            </Button>
+            <Button Classes="pill" Command="{Binding ShowImCommand}" ToolTip.Tip="气泡">
+              <PathIcon Data="{x:Static theming:IconGeometries.Forums}" />
+            </Button>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+      <!-- 底部对话框（保持居中；立绘整体向左偏，靠代码算偏移） -->
+      <Border VerticalAlignment="Bottom"
+              HorizontalAlignment="Stretch"
+              MaxWidth="880"
+              Margin="40,0,40,24"
+              Background="{DynamicResource DialogueBackdropBrush}"
+              BorderBrush="{DynamicResource BorderBrush}"
+              BorderThickness="1"
+              CornerRadius="20"
+              Padding="22,18"
+              BoxShadow="0 18 44 0 #99000000">
+        <Grid RowDefinitions="Auto,Auto,Auto">
+
+          <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+            <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+              <TextBlock Text="{Binding CharacterName}" FontSize="17" FontWeight="SemiBold"
+                         Foreground="{DynamicResource AccentBrush}" />
+              <Border Classes="badge muted">
+                <TextBlock Text="{Binding DialogueMeta}" />
+              </Border>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
+              <Button Content="≡" Classes="icon" ToolTip.Tip="历史（占位）" />
+              <Button Content="⋯" Classes="icon" ToolTip.Tip="更多（占位）" />
+            </StackPanel>
+          </Grid>
+
+          <TextBlock Grid.Row="1" Text="{Binding Dialogue}"
+                     FontSize="15" LineHeight="27"
+                     Margin="0,10,0,16" MaxLines="3"
+                     TextTrimming="CharacterEllipsis" />
+
+          <Border Grid.Row="2"
+                  Background="{DynamicResource ComposerBrush}"
+                  BorderBrush="{DynamicResource BorderSoftBrush}"
+                  BorderThickness="1"
+                  CornerRadius="13"
+                  Padding="8">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBox x:Name="PortraitComposerBox"
+                       Classes="composer"
+                       AcceptsReturn="True"
+                       MinHeight="38" MaxHeight="110"
+                       TextWrapping="Wrap"
+                       PlaceholderText="{Binding ComposerWatermark}"
+                       Text="{Binding Draft}" />
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Bottom">
+                <Button Classes="icon" ToolTip.Tip="场景与状态">
+                  <Button.Flyout>
+                    <Flyout Placement="Top">
+                      <Border Classes="card" Padding="16" Width="300">
+                        <StackPanel Spacing="12">
+                          <StackPanel Spacing="2">
+                            <TextBlock Text="当前场景" Classes="label" />
+                            <TextBlock Text="{Binding SceneTitle}" FontSize="16" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding SceneDetail}" Classes="caption" />
+                          </StackPanel>
+
+                          <Separator />
+
+                          <ItemsControl ItemsSource="{Binding States}">
+                            <ItemsControl.ItemTemplate>
+                              <DataTemplate x:DataType="items:StateItem">
+                                <StackPanel Spacing="4" Margin="0,0,0,7">
+                                  <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="{Binding Name}" Classes="muted" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="11.5"
+                                               FontWeight="SemiBold" />
+                                  </Grid>
+                                  <ProgressBar Value="{Binding Percent}" Maximum="100"
+                                               MinWidth="0" Height="4"
+                                               Classes.gold="{Binding IsGold}"
+                                               Classes.mint="{Binding IsMint}"
+                                               IsVisible="{Binding IsNumeric}" />
+                                </StackPanel>
+                              </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                          </ItemsControl>
+                        </StackPanel>
+                      </Border>
+                    </Flyout>
+                  </Button.Flyout>
+                  <PathIcon Data="{x:Static theming:IconGeometries.Info}" />
+                </Button>
+                <Button Classes="icon" ToolTip.Tip="语音（占位）">
+                  <PathIcon Data="{x:Static theming:IconGeometries.Mic}" />
+                </Button>
+                <Button Classes="icon" ToolTip.Tip="相机 / 出图（占位）">
+                  <PathIcon Data="{x:Static theming:IconGeometries.Camera}" />
+                </Button>
+                <Button Classes="send" ToolTip.Tip="终止本轮"
+                        Background="{DynamicResource DangerBrush}"
+                        IsVisible="{Binding IsTurnRunning}"
+                        Command="{Binding StopCommand}">
+                  <PathIcon Data="{x:Static theming:IconGeometries.Stop}"
+                            Width="14" Height="14" />
+                </Button>
+                <Button Classes="send" ToolTip.Tip="发送"
+                        Command="{Binding SendCommand}">
+                  <Path Data="M2,21 L23,12 L2,3 L2,10 L17,12 L2,14 Z"
+                        Fill="{DynamicResource OnAccentBrush}"
+                        Stretch="Uniform" Width="15" Height="15" />
+                </Button>
+              </StackPanel>
+            </Grid>
+          </Border>
+
+        </Grid>
+      </Border>
+
+    </Grid>
+
+    <!-- ================= 气泡 IM 模式 ================= -->
+    <Grid IsVisible="{Binding IsImMode}" RowDefinitions="Auto,*,Auto" Margin="0,40,0,0">
+
+      <Border Grid.Row="0" BorderBrush="{DynamicResource BorderSoftBrush}" BorderThickness="0,0,0,1">
+        <Grid ColumnDefinitions="*,Auto" Margin="110,12,22,12">
+          <StackPanel Spacing="2">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="对话" Classes="h1" />
+              <Border Classes="badge muted">
+                <TextBlock Text="{Binding TimelineTitle}" />
+              </Border>
+            </StackPanel>
+            <TextBlock Text="统一 RP 时间线 · 发送渠道固定桌面" Classes="caption" />
+          </StackPanel>
+
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <Border Background="{DynamicResource CardBrush}"
+                    BorderBrush="{DynamicResource BorderSoftBrush}"
+                    BorderThickness="1" CornerRadius="999" Padding="3">
+              <StackPanel Orientation="Horizontal" Spacing="2">
+                <Button Classes="lane-tab"
+                        Classes.active="{Binding IsDesktopLaneSelected}"
+                        Command="{Binding ShowDesktopLaneCommand}"
+                        ToolTip.Tip="只看桌面渠道">
+                  <TextBlock Text="桌面" FontSize="11.5" />
+                </Button>
+                <Button Classes="lane-tab"
+                        Classes.active="{Binding IsAllLanesSelected}"
+                        Command="{Binding ShowAllLanesCommand}"
+                        ToolTip.Tip="合并显示所有 RP Lane（桌面 + Mattermost）">
+                  <TextBlock Text="全部 Lane" FontSize="11.5" />
+                </Button>
+              </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource CardBrush}"
+                    BorderBrush="{DynamicResource BorderSoftBrush}"
+                    BorderThickness="1" CornerRadius="999" Padding="3">
+              <StackPanel Orientation="Horizontal" Spacing="2">
+                <Button Classes="pill" Command="{Binding ShowPortraitCommand}" ToolTip.Tip="立绘">
+                  <PathIcon Data="{x:Static theming:IconGeometries.Image}" />
+                </Button>
+                <Button Classes="pill active" ToolTip.Tip="气泡">
+                  <PathIcon Data="{x:Static theming:IconGeometries.Forums}" />
+                </Button>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <ScrollViewer Grid.Row="1" x:Name="RpMessageScroller" HorizontalScrollBarVisibility="Disabled">
+        <ItemsControl ItemsSource="{Binding VisibleMessages}"
+                      ItemTemplate="{StaticResource ChatMessageTemplate}"
+                      MaxWidth="{Binding ContentMaxWidth}" Margin="24,20,24,8"
+                      HorizontalAlignment="Stretch" />
+      </ScrollViewer>
+
+      <Border Grid.Row="2"
+              Background="{DynamicResource BgRaisedBrush}"
+              BorderBrush="{DynamicResource BorderSoftBrush}"
+              BorderThickness="0,1,0,0"
+              Padding="22,12,22,14">
+        <StackPanel MaxWidth="{Binding ContentMaxWidth}" HorizontalAlignment="Stretch">
+          <!-- 审批条：回合内挂起，不答复会超时按拒绝收束 -->
+          <Border IsVisible="{Binding HasPendingApproval}"
+                  Margin="0,0,0,8"
+                  Padding="14,11"
+                  CornerRadius="12"
+                  Background="{DynamicResource CardBrush}"
+                  BorderBrush="{DynamicResource AccentBorderBrush}"
+                  BorderThickness="1">
+            <StackPanel Spacing="8">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="{Binding PendingApproval.Title}" FontSize="12.5" FontWeight="SemiBold" />
+                <TextBlock Grid.Column="1" Text="{Binding PendingApproval.ExpiryHint}" Classes="caption"
+                           VerticalAlignment="Center" />
+              </Grid>
+
+              <ScrollViewer IsVisible="{Binding PendingApproval.HasCommand}"
+                            MaxHeight="110"
+                            HorizontalScrollBarVisibility="Disabled">
+                <SelectableTextBlock Text="{Binding PendingApproval.Command}" Classes="mono"
+                                     FontSize="11" LineHeight="17"
+                                     Foreground="{DynamicResource TextMutedBrush}" />
+              </ScrollViewer>
+
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="批准" Classes="ghost" FontSize="11.5"
+                        Command="{Binding ApproveApprovalCommand}" />
+                <Button Content="拒绝" Classes="ghost" FontSize="11.5"
+                        Command="{Binding DenyApprovalCommand}" />
+                <Button Content="本 Lane 总是允许" Classes="ghost" FontSize="11.5"
+                        Command="{Binding AlwaysApprovalCommand}"
+                        ToolTip.Tip="只对当前 Lane 生效" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <Border Background="{DynamicResource ComposerBrush}"
+                  BorderBrush="{DynamicResource BorderSoftBrush}"
+                  BorderThickness="1"
+                  CornerRadius="14"
+                  Padding="12">
+            <Grid RowDefinitions="Auto,Auto">
+              <TextBox Grid.Row="0"
+                       x:Name="RpComposerBox"
+                       Classes="composer"
+                       AcceptsReturn="True"
+                       TextWrapping="Wrap"
+                       MinHeight="56" MaxHeight="120"
+                       PlaceholderText="{Binding ComposerWatermark}"
+                       Text="{Binding Draft}" />
+
+              <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <Button Classes="icon" ToolTip.Tip="语音（占位）">
+                    <PathIcon Data="{x:Static theming:IconGeometries.Mic}" />
+                  </Button>
+                  <Button Classes="icon" ToolTip.Tip="相机 / 出图（占位）">
+                    <PathIcon Data="{x:Static theming:IconGeometries.Camera}" />
+                  </Button>
+                  <Button Classes="icon" ToolTip.Tip="附件（占位）">
+                    <PathIcon Data="{x:Static theming:IconGeometries.Attach}" />
+                  </Button>
+                  <Button Classes="icon"
+                          Classes.active="{Binding ShowToolCalls}"
+                          Command="{Binding ToggleToolCallsCommand}"
+                          ToolTip.Tip="{Binding ToolCallsTip}">
+                    <PathIcon Data="{x:Static theming:IconGeometries.Wrench}" />
+                  </Button>
+                  <Button Classes="icon"
+                          Classes.active="{Binding ShowReasoning}"
+                          Command="{Binding ToggleReasoningCommand}"
+                          ToolTip.Tip="{Binding ReasoningTip}">
+                    <PathIcon Data="{x:Static theming:IconGeometries.Thought}" />
+                  </Button>
+                  <Button Classes="icon"
+                          Classes.active="{Binding ShowSystemInputs}"
+                          Command="{Binding ToggleSystemInputsCommand}"
+                          ToolTip.Tip="{Binding SystemInputsTip}">
+                    <PathIcon Data="{x:Static theming:IconGeometries.Info}" />
+                  </Button>
+                  <Button Classes="icon"
+                          Classes.active="{Binding SendOnEnter}"
+                          Command="{Binding ToggleSendShortcutCommand}"
+                          ToolTip.Tip="{Binding SendShortcutTip}">
+                    <PathIcon Data="{x:Static theming:IconGeometries.ReturnKey}" />
+                  </Button>
+                  <Button Classes="icon"
+                          Classes.active="{Binding IsWideBubbles}"
+                          Command="{Binding ToggleBubbleWidthCommand}"
+                          ToolTip.Tip="{Binding BubbleWidthTip}">
+                    <PathIcon Data="{Binding BubbleWidthIcon}" />
+                  </Button>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                  <Button Classes="send" ToolTip.Tip="终止本轮"
+                          Background="{DynamicResource DangerBrush}"
+                          IsVisible="{Binding IsTurnRunning}"
+                          Command="{Binding StopCommand}">
+                    <PathIcon Data="{x:Static theming:IconGeometries.Stop}"
+                              Width="14" Height="14" />
+                  </Button>
+                  <Button Classes="send" ToolTip.Tip="发送"
+                          Command="{Binding SendCommand}">
+                    <Path Data="M2,21 L23,12 L2,3 L2,10 L17,12 L2,14 Z"
+                          Fill="{DynamicResource OnAccentBrush}"
+                          Stretch="Uniform" Width="15" Height="15" />
+                  </Button>
+                </StackPanel>
+              </Grid>
+            </Grid>
+          </Border>
+        </StackPanel>
+      </Border>
+
+    </Grid>
+
+  </Grid>
+</UserControl>

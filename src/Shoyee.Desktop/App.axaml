@@ -1,0 +1,110 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:cron="using:Shoyee.Desktop.ViewModels.Cron"
+             xmlns:views="using:Shoyee.Desktop.Views"
+             x:Class="Shoyee.Desktop.App"
+             Name="筱义"
+             RequestedThemeVariant="Dark">
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://Shoyee.Desktop/Styles/MessageTemplates.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+
+      <ResourceDictionary.ThemeDictionaries>
+        <!-- ============ 暗黑 ============ -->
+        <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="BgBrush" Color="#100E13" />
+          <SolidColorBrush x:Key="BgRaisedBrush" Color="#17141B" />
+          <SolidColorBrush x:Key="PanelBrush" Color="#1C1820" />
+          <SolidColorBrush x:Key="CardBrush" Color="#241F29" />
+          <SolidColorBrush x:Key="CardHoverBrush" Color="#2D2633" />
+          <SolidColorBrush x:Key="BorderBrush" Color="#372F3E" />
+          <SolidColorBrush x:Key="BorderSoftBrush" Color="#2A2430" />
+          <SolidColorBrush x:Key="TextBrush" Color="#F4EEF2" />
+          <SolidColorBrush x:Key="TextDimBrush" Color="#B7AAB6" />
+          <SolidColorBrush x:Key="TextMutedBrush" Color="#7E7280" />
+          <SolidColorBrush x:Key="MintBrush" Color="#9BC8C0" />
+          <SolidColorBrush x:Key="MintSoftBrush" Color="#223432" />
+          <SolidColorBrush x:Key="GoldBrush" Color="#EBC98B" />
+          <SolidColorBrush x:Key="GoldSoftBrush" Color="#3A3020" />
+          <SolidColorBrush x:Key="DangerBrush" Color="#E58B8B" />
+          <SolidColorBrush x:Key="PreviewABrush" Color="#3A2C3C" />
+          <SolidColorBrush x:Key="PreviewBBrush" Color="#211A26" />
+          <Color x:Key="PreviewAColor">#3A2C3C</Color>
+          <Color x:Key="PreviewBColor">#211A26</Color>
+          <SolidColorBrush x:Key="DialogueBackdropBrush" Color="#EB17141B" />
+          <SolidColorBrush x:Key="ScrimBrush" Color="#AA000000" />
+          <SolidColorBrush x:Key="ComposerBrush" Color="#17141B" />
+
+          <LinearGradientBrush x:Key="StageWashBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Offset="0" Color="#1B1720" />
+            <GradientStop Offset="0.55" Color="#151218" />
+            <GradientStop Offset="1" Color="#100E13" />
+          </LinearGradientBrush>
+        </ResourceDictionary>
+
+        <!-- ============ 明亮 ============ -->
+        <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="BgBrush" Color="#F7F2F5" />
+          <SolidColorBrush x:Key="BgRaisedBrush" Color="#FBF8FA" />
+          <SolidColorBrush x:Key="PanelBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="CardBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="CardHoverBrush" Color="#F3E9EE" />
+          <SolidColorBrush x:Key="BorderBrush" Color="#E3D4DC" />
+          <SolidColorBrush x:Key="BorderSoftBrush" Color="#EEE3E9" />
+          <SolidColorBrush x:Key="TextBrush" Color="#2A222A" />
+          <SolidColorBrush x:Key="TextDimBrush" Color="#5C4E58" />
+          <SolidColorBrush x:Key="TextMutedBrush" Color="#92818D" />
+          <SolidColorBrush x:Key="MintBrush" Color="#3F8278" />
+          <SolidColorBrush x:Key="MintSoftBrush" Color="#E1F1ED" />
+          <SolidColorBrush x:Key="GoldBrush" Color="#A8762C" />
+          <SolidColorBrush x:Key="GoldSoftBrush" Color="#F6EDD9" />
+          <SolidColorBrush x:Key="DangerBrush" Color="#B94E4E" />
+          <SolidColorBrush x:Key="PreviewABrush" Color="#F0E2EA" />
+          <SolidColorBrush x:Key="PreviewBBrush" Color="#E7DAE3" />
+          <Color x:Key="PreviewAColor">#F0E2EA</Color>
+          <Color x:Key="PreviewBColor">#E7DAE3</Color>
+          <SolidColorBrush x:Key="DialogueBackdropBrush" Color="#F2FFFFFF" />
+          <SolidColorBrush x:Key="ScrimBrush" Color="#66000000" />
+          <SolidColorBrush x:Key="ComposerBrush" Color="#FFFFFF" />
+
+          <LinearGradientBrush x:Key="StageWashBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Offset="0" Color="#F8F5F7" />
+            <GradientStop Offset="0.55" Color="#F2EDF0" />
+            <GradientStop Offset="1" Color="#ECE7EA" />
+          </LinearGradientBrush>
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+
+      <!-- 强调色由 AppearanceService 在运行时覆盖；这里的值是启动前的兜底。 -->
+      <SolidColorBrush x:Key="AccentBrush" Color="#E8A2B4" />
+      <SolidColorBrush x:Key="AccentHoverBrush" Color="#F2B5C4" />
+      <SolidColorBrush x:Key="AccentSoftBrush" Color="#2EE8A2B4" />
+      <SolidColorBrush x:Key="AccentBorderBrush" Color="#66E8A2B4" />
+      <SolidColorBrush x:Key="OnAccentBrush" Color="#241018" />
+      <Color x:Key="AccentColor">#E8A2B4</Color>
+      <Color x:Key="AccentGlowColor">#59E8A2B4</Color>
+      <Color x:Key="AccentGlowFadeColor">#00E8A2B4</Color>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.DataTemplates>
+    <DataTemplate DataType="vm:WorkViewModel">
+      <views:WorkView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:RoleplayViewModel">
+      <views:RoleplayView />
+    </DataTemplate>
+    <DataTemplate DataType="cron:CronViewModel">
+      <views:CronView />
+    </DataTemplate>
+  </Application.DataTemplates>
+
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://Shoyee.Desktop/Styles/Theme.axaml" />
+  </Application.Styles>
+</Application>

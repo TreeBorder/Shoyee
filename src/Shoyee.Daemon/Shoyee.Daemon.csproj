@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 常驻进程（launchd）：配置加载、单实例锁、DI 装配、优雅退出 -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Shoyee.Daemon</AssemblyName>
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Shoyee.Daemon.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+    <ProjectReference Include="..\Shoyee.Client\Shoyee.Client.csproj" />
+    <ProjectReference Include="..\Shoyee.Storage.Abstractions\Shoyee.Storage.Abstractions.csproj" />
+    <ProjectReference Include="..\Shoyee.Storage.Sqlite\Shoyee.Storage.Sqlite.csproj" />
+    <ProjectReference Include="..\Shoyee.Sessions\Shoyee.Sessions.csproj" />
+    <ProjectReference Include="..\Shoyee.Agent\Shoyee.Agent.csproj" />
+    <ProjectReference Include="..\Shoyee.Handlers\Shoyee.Handlers.csproj" />
+    <ProjectReference Include="..\Shoyee.Proactive\Shoyee.Proactive.csproj" />
+    <ProjectReference Include="..\Shoyee.Gateway\Shoyee.Gateway.csproj" />
+    <ProjectReference Include="..\Shoyee.Web\Shoyee.Web.csproj" />
+    <ProjectReference Include="..\Shoyee.Notes\Shoyee.Notes.csproj" />
+    <ProjectReference Include="..\Shoyee.Notes.Obsidian\Shoyee.Notes.Obsidian.csproj" />
+    <ProjectReference Include="..\Shoyee.Web.DeepSeek\Shoyee.Web.DeepSeek.csproj" />
+    <ProjectReference Include="..\Shoyee.Voice\Shoyee.Voice.csproj" />
+    <ProjectReference Include="..\Shoyee.Voice.Mimo\Shoyee.Voice.Mimo.csproj" />
+    <ProjectReference Include="..\Shoyee.Voice.Apple\Shoyee.Voice.Apple.csproj" />
+    <ProjectReference Include="..\Shoyee.Photo\Shoyee.Photo.csproj" />
+    <ProjectReference Include="..\Shoyee.Photo.Comfy\Shoyee.Photo.Comfy.csproj" />
+    <ProjectReference Include="..\Shoyee.Notify.ServerChan\Shoyee.Notify.ServerChan.csproj" />
+    <ProjectReference Include="..\Shoyee.Notify.Email\Shoyee.Notify.Email.csproj" />
+    <ProjectReference Include="..\Shoyee.Notify.System\Shoyee.Notify.System.csproj" />
+    <ProjectReference Include="..\Shoyee.Channels\Shoyee.Channels.csproj" />
+    <ProjectReference Include="..\Shoyee.Channels.Mattermost\Shoyee.Channels.Mattermost.csproj" />
+    <ProjectReference Include="..\Shoyee.Channels.WeChat\Shoyee.Channels.WeChat.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
+  </ItemGroup>
+  <Target Name="BuildSpeechSttHelper"
+          AfterTargets="Build"
+          Condition="'$(OS)' == 'Unix' AND $([MSBuild]::IsOSPlatform('OSX')) AND Exists('$(MSBuildThisFileDirectory)..\Shoyee.Voice.Apple\Native\speech-stt.swift')"
+          Inputs="$(MSBuildThisFileDirectory)..\Shoyee.Voice.Apple\Native\speech-stt.swift"
+          Outputs="$(OutDir)speech-stt">
+    <!-- Apple 转写的 helper 必须与 daemon 同目录（默认 AppContext.BaseDirectory/speech-stt）；
+         没有 swiftc 就跳过，转写器 Configured=false，工具不挂载，不拦构建 -->
+    <Exec Command="swiftc -O &quot;$(MSBuildThisFileDirectory)..\Shoyee.Voice.Apple\Native\speech-stt.swift&quot; -o &quot;$(OutDir)speech-stt&quot;"
+          ContinueOnError="true" />
+  </Target>
+  <Target Name="BuildShoyeeApp"
+          AfterTargets="Build"
+          Condition="'$(OS)' == 'Unix' AND $([MSBuild]::IsOSPlatform('OSX')) AND Exists('$(MSBuildThisFileDirectory)..\Shoyee.Menu\build-app.sh')">
+    <!-- 常驻 bundle：Swift 菜单栏（状态/启停/通知）+ 由 install-app.sh 补齐 ctl 与 daemon。
+         没有 swiftc 时脚本自行跳过，系统通知在运行时报可操作错误，不拦构建 -->
+    <Exec Command="bash &quot;$(MSBuildThisFileDirectory)..\Shoyee.Menu\build-app.sh&quot; &quot;$(OutDir)&quot;"
+          ContinueOnError="true" />
+  </Target>
+</Project>

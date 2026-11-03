@@ -1,0 +1,128 @@
+{
+  "sessions": [
+    {
+      "id": "sample_voice_0001",
+      "title": "语音识别链路",
+      "source": "Mattermost",
+      "external": true,
+      "laneId": "mattermost:sample",
+      "createdAt": "2026-11-03T09:00:00+08:00",
+      "lastActivityAt": "2026-11-03T09:12:00+08:00",
+      "pinned": true,
+      "archived": false,
+      "messageCount": 6,
+      "lastInputTokens": 65379,
+      "lastCachedInputTokens": 64896,
+      "messages": [
+        {
+          "role": "user",
+          "content": "[老板发来附件（已存本地，用 file_access 读）：\n- voice_01.mp3 → /tmp/voice_01.mp3]\n帮我看看这段语音里说了什么",
+          "createdAt": "2026-11-03T09:00:10+08:00"
+        },
+        {
+          "role": "assistant",
+          "content": "",
+          "messageJson": "{\"contents\":[{\"$type\":\"reasoning\",\"text\":\"先确认一下文件在不在，再决定用本地转写还是模型。\"},{\"$type\":\"functionCall\",\"name\":\"terminal\",\"arguments\":{\"command\":\"ls -l /tmp/voice_01.mp3\"},\"callId\":\"call_01\"}],\"messageId\":\"m1\"}",
+          "createdAt": "2026-11-03T09:00:20+08:00"
+        },
+        {
+          "role": "tool",
+          "content": "",
+          "messageJson": "{\"contents\":[{\"$type\":\"functionResult\",\"result\":\"-rw-r--r--  1 user  staff  48210 Jan  2 09:00 /tmp/voice_01.mp3\",\"callId\":\"call_01\"}],\"messageId\":\"m2\"}",
+          "createdAt": "2026-11-03T09:00:21+08:00"
+        },
+        {
+          "role": "assistant",
+          "content": "",
+          "messageJson": "{\"contents\":[{\"$type\":\"reasoning\",\"text\":\"文件在，直接走语音转写。\"},{\"$type\":\"functionCall\",\"name\":\"voice_transcribe\",\"arguments\":{\"path\":\"/tmp/voice_01.mp3\"},\"callId\":\"call_02\"}],\"messageId\":\"m3\"}",
+          "createdAt": "2026-11-03T09:00:30+08:00"
+        },
+        {
+          "role": "tool",
+          "content": "",
+          "messageJson": "{\"contents\":[{\"$type\":\"functionResult\",\"result\":\"这是一段测试语音，用来验证转写链路。\",\"callId\":\"call_02\"}],\"messageId\":\"m4\"}",
+          "createdAt": "2026-11-03T09:00:31+08:00"
+        },
+        {
+          "role": "assistant",
+          "content": "转写好了：这是一段测试语音，用来验证转写链路。识别质量正常。",
+          "createdAt": "2026-11-03T09:00:40+08:00"
+        }
+      ]
+    },
+    {
+      "id": "sample_name_0002",
+      "title": "给合并项目起名",
+      "source": "微信",
+      "external": true,
+      "laneId": "wechat:sample",
+      "createdAt": "2026-11-02T20:30:00+08:00",
+      "lastActivityAt": "2026-11-02T20:45:00+08:00",
+      "pinned": false,
+      "archived": false,
+      "messageCount": 6,
+      "lastInputTokens": 12000,
+      "lastCachedInputTokens": 11400,
+      "messages": [
+        {
+          "role": "user",
+          "content": "两个项目要合并成一个，帮我想几个名字，简短一点。",
+          "createdAt": "2026-11-02T20:30:10+08:00"
+        },
+        {
+          "role": "assistant",
+          "content": "先给你几个方向：一个偏工具感，一个偏人格化，还有一个是纯代号。",
+          "createdAt": "2026-11-02T20:31:00+08:00"
+        },
+        {
+          "role": "assistant",
+          "content": "",
+          "messageJson": "{\"contents\":[{\"$type\":\"reasoning\",\"text\":\"先查一下仓库里已有的命名，避免撞车。\"},{\"$type\":\"functionCall\",\"name\":\"terminal\",\"arguments\":{\"command\":\"grep -r \\\"name\\\" -m 5 README.md\"},\"callId\":\"call_03\"}],\"messageId\":\"m5\"}",
+          "createdAt": "2026-11-02T20:40:00+08:00"
+        },
+        {
+          "role": "tool",
+          "content": "",
+          "messageJson": "{\"contents\":[{\"$type\":\"functionResult\",\"result\":\"README.md:1: # Shoyee\",\"callId\":\"call_03\"}],\"messageId\":\"m6\"}",
+          "createdAt": "2026-11-02T20:40:01+08:00"
+        },
+        {
+          "role": "user",
+          "content": "偏人格化的那个再展开一下。",
+          "createdAt": "2026-11-02T20:44:00+08:00"
+        },
+        {
+          "role": "assistant",
+          "content": "人格化的路线可以围绕「住在机器里的搭档」来想，名字短、读音顺口，后续做界面也好排版。",
+          "createdAt": "2026-11-02T20:45:00+08:00"
+        }
+      ]
+    },
+    {
+      "id": "sample_docs_0003",
+      "title": "整理需求笔记",
+      "source": "Mattermost",
+      "external": true,
+      "laneId": "mattermost:sample",
+      "createdAt": "2026-10-30T14:00:00+08:00",
+      "lastActivityAt": "2026-10-30T14:20:00+08:00",
+      "pinned": false,
+      "archived": false,
+      "messageCount": 2,
+      "lastInputTokens": 8000,
+      "lastCachedInputTokens": 6000,
+      "messages": [
+        {
+          "role": "user",
+          "content": "把昨天讨论的需求整理成一份笔记",
+          "createdAt": "2026-10-30T14:00:10+08:00"
+        },
+        {
+          "role": "assistant",
+          "content": "整理好了，按「目标、范围、待定」三节归档，待定项都标了负责人。",
+          "createdAt": "2026-10-30T14:20:00+08:00"
+        }
+      ]
+    }
+  ]
+}

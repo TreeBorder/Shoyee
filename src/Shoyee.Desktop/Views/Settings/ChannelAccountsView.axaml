@@ -1,0 +1,185 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:settings="using:Shoyee.Desktop.ViewModels.Settings"
+             x:Class="Shoyee.Desktop.Views.Settings.ChannelAccountsView"
+             x:DataType="vm:MainViewModel">
+
+  <Grid>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Margin="30,18,30,40" Spacing="16"
+                  HorizontalAlignment="Stretch">
+
+        <Border Classes="card" Padding="18">
+          <StackPanel Spacing="12">
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="3">
+                <TextBlock Text="渠道账号" Classes="h2" />
+                <TextBlock Text="每个账号绑定一个模式；Mattermost 走 WebSocket，微信走 iLink 长轮询。"
+                           Classes="caption" />
+              </StackPanel>
+              <Button Grid.Column="1" Content="添加渠道" Classes="primary" FontSize="12"
+                      VerticalAlignment="Top"
+                      Command="{Binding ChannelAccounts.AddCommand}" />
+            </Grid>
+
+            <Separator />
+
+            <ItemsControl ItemsSource="{Binding ChannelAccounts.Entries}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Spacing="8" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="settings:ChannelAccountViewModel">
+                  <Border Classes="tool-row" Padding="12,10">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                          <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold"
+                                     VerticalAlignment="Center" />
+                          <Border Classes="chip">
+                            <TextBlock Text="{Binding KindLabel}" Classes="caption" />
+                          </Border>
+                          <Border Classes="badge mint" IsVisible="{Binding IsEnabled}">
+                            <TextBlock Text="已启用" />
+                          </Border>
+                          <Border Classes="badge muted" IsVisible="{Binding !IsEnabled}">
+                            <TextBlock Text="已停用" />
+                          </Border>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                          <TextBlock Text="{Binding EndpointLabel}" Classes="mono muted" FontSize="10.5" />
+                          <TextBlock Text="{Binding TokenEnv}" Classes="mono muted" FontSize="10.5" />
+                        </StackPanel>
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                                  VerticalAlignment="Center">
+                        <Button Content="编辑" Classes="ghost" FontSize="11" Padding="9,4"
+                                Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).ChannelAccounts.EditCommand}"
+                                CommandParameter="{Binding}" />
+                        <Button Content="删除" Classes="ghost" FontSize="11" Padding="9,4"
+                                Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).ChannelAccounts.DeleteCommand}"
+                                CommandParameter="{Binding}" />
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock Text="现在是占位数据，改动只在本次运行内有效；接 daemon 后换成 channels.* 的 config.get / config.set。"
+                       Classes="caption" />
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card" Padding="16,14">
+          <StackPanel Spacing="4">
+            <TextBlock Text="token 只存环境变量名，不写进配置文件。"
+                       Classes="muted" />
+            <TextBlock Text="微信整条渠道声明为不可信：指令只认白名单用户，过程行不进微信。"
+                       Classes="caption" />
+          </StackPanel>
+        </Border>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- 添加 / 编辑渠道：页内模态弹窗 -->
+    <Panel IsVisible="{Binding ChannelAccounts.IsDialogOpen}">
+      <Border Background="{DynamicResource ScrimBrush}" />
+
+      <Border Classes="card dialog" Width="560" MaxHeight="680"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              Padding="22">
+        <StackPanel Spacing="14">
+          <TextBlock Text="{Binding ChannelAccounts.DialogTitle}" Classes="h2" />
+
+          <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="520">
+            <StackPanel Spacing="14"
+                        DataContext="{Binding ChannelAccounts.Editing}"
+                        x:DataType="settings:ChannelAccountViewModel">
+
+              <StackPanel Spacing="6">
+                <TextBlock Text="渠道类型" Classes="label" />
+                <StackPanel Orientation="Horizontal" Spacing="18">
+                  <RadioButton GroupName="channel-kind" Content="Mattermost"
+                               IsChecked="{Binding IsMattermost, Mode=TwoWay}" />
+                  <RadioButton GroupName="channel-kind" Content="微信"
+                               IsChecked="{Binding IsWeChat, Mode=TwoWay}" />
+                </StackPanel>
+              </StackPanel>
+
+              <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                <TextBlock Text="显示名" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,12" />
+                <TextBox Grid.Column="1" Text="{Binding Name, Mode=TwoWay}"
+                         PlaceholderText="如 工作账号" FontSize="12.5" Margin="0,0,0,12" />
+
+                <TextBlock Grid.Row="1" Text="{Binding BaseUrlHint}" Classes="muted"
+                           VerticalAlignment="Center" Margin="0,0,16,12" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding BaseUrl, Mode=TwoWay}"
+                         FontSize="12.5" Margin="0,0,0,12" />
+
+                <TextBlock Grid.Row="2" Text="token 环境变量" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,12" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding TokenEnv, Mode=TwoWay}"
+                         FontSize="12.5" Margin="0,0,0,12" />
+
+                <TextBlock Grid.Row="3" Text="允许用户" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,0" />
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding AllowedUsers, Mode=TwoWay}"
+                         PlaceholderText="逗号分隔；空 = 不限制"
+                         FontSize="12.5" />
+              </Grid>
+
+              <StackPanel Spacing="6" IsVisible="{Binding IsMattermost}">
+                <TextBlock Text="Mattermost" Classes="label" />
+                <CheckBox Content="频道里需要 @bot 才响应（私聊免）"
+                          IsChecked="{Binding RequireMention, Mode=TwoWay}" />
+              </StackPanel>
+
+              <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto" IsVisible="{Binding IsWeChat}">
+                <TextBlock Text="最小发送间隔" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,12" />
+                <Grid Grid.Column="1" ColumnDefinitions="160,Auto" Margin="0,0,0,12">
+                  <NumericUpDown Value="{Binding MinIntervalSeconds, Mode=TwoWay}"
+                                 Minimum="0" Maximum="30" Increment="0.1"
+                                 FormatString="0.0" FontSize="12.5" />
+                  <TextBlock Grid.Column="1" Text="秒" Classes="caption"
+                             VerticalAlignment="Center" Margin="8,0,0,0" />
+                </Grid>
+
+                <TextBlock Grid.Row="1" Text="窗口期兜底" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,0" />
+                <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="160,Auto">
+                  <NumericUpDown Value="{Binding WindowHours, Mode=TwoWay}"
+                                 Minimum="0" Maximum="24" Increment="0.5"
+                                 FormatString="0.0" FontSize="12.5" />
+                  <TextBlock Grid.Column="1" Text="小时" Classes="caption"
+                             VerticalAlignment="Center" Margin="8,0,0,0" />
+                </Grid>
+              </Grid>
+
+              <CheckBox Content="启用这个账号" IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
+
+              <TextBlock Text="{Binding Error}" Classes="caption"
+                         Foreground="{DynamicResource DangerBrush}"
+                         IsVisible="{Binding HasError}" />
+            </StackPanel>
+          </ScrollViewer>
+
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Content="取消" Classes="ghost" FontSize="12" Padding="14,6"
+                    Command="{Binding ChannelAccounts.CancelDialogCommand}" />
+            <Button Content="保存" Classes="primary" FontSize="12" Padding="16,6"
+                    Command="{Binding ChannelAccounts.SaveDialogCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Panel>
+
+  </Grid>
+</UserControl>

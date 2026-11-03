@@ -1,0 +1,132 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:nav="using:Shoyee.Desktop.ViewModels.Settings"
+             x:Class="Shoyee.Desktop.Views.Settings.PlaceholderSettingsView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="30,18,30,40" Spacing="16"
+                HorizontalAlignment="Stretch">
+
+      <Border Classes="card" Padding="16,14">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel Spacing="4">
+            <TextBlock Text="{Binding SelectedPageItem.Summary}" Classes="muted" />
+            <TextBlock Text="{Binding SelectedPageItem.DataSource}" Classes="mono muted"
+                       FontSize="10.5" TextTrimming="CharacterEllipsis" />
+          </StackPanel>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                      VerticalAlignment="Center" Margin="12,0,0,0">
+            <Border Classes="badge mint" IsVisible="{Binding SelectedPageItem.IsLiveData}">
+              <TextBlock Text="只读 · 实时" />
+            </Border>
+            <Border Classes="badge gold" IsVisible="{Binding !SelectedPageItem.IsLiveData}">
+              <TextBlock Text="待接后端" />
+            </Border>
+            <Button Content="编辑" Classes="ghost" FontSize="11.5"
+                    IsVisible="{Binding SelectedPageItem.IsLiveData}"
+                    Command="{Binding EditSettingsPageCommand}" />
+            <Button Content="保存" Classes="primary" FontSize="11.5"
+                    IsVisible="{Binding SelectedPageItem.IsEditing}"
+                    Command="{Binding SaveSettingsPageCommand}" />
+            <Button Content="取消" Classes="ghost" FontSize="11.5"
+                    IsVisible="{Binding SelectedPageItem.IsEditing}"
+                    Command="{Binding CancelEditSettingsPageCommand}" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!-- 配置分组：值是实际运行配置的样例，接后端后换成绑定 -->
+      <ItemsControl ItemsSource="{Binding SelectedPageItem.Groups}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="16" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="nav:SettingsGroupItem">
+            <Border Classes="card" Padding="18">
+              <StackPanel Spacing="12">
+                <StackPanel Spacing="3">
+                  <TextBlock Text="{Binding Title}" Classes="h2" />
+                  <TextBlock Text="{Binding Description}" Classes="caption" />
+                </StackPanel>
+
+                <Separator />
+
+                <ItemsControl ItemsSource="{Binding Fields}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Spacing="10" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="nav:SettingsFieldItem">
+                      <Grid ColumnDefinitions="200,*">
+                        <TextBlock Text="{Binding Label}" Classes="muted"
+                                   VerticalAlignment="Center" Margin="0,0,16,0" />
+
+                        <StackPanel Grid.Column="1" Spacing="3">
+                          <TextBox Text="{Binding Value, Mode=TwoWay}" IsReadOnly="{Binding !IsEditing}"
+                                   IsVisible="{Binding IsText}" FontSize="12.5" />
+
+                          <ToggleSwitch IsChecked="{Binding IsOn, Mode=TwoWay}"
+                                        IsVisible="{Binding IsSwitch}"
+                                        IsEnabled="{Binding IsEditing}" />
+
+                          <TextBox Text="{Binding Value, Mode=TwoWay}" IsReadOnly="{Binding !IsEditing}"
+                                   AcceptsReturn="True" TextWrapping="Wrap"
+                                   IsVisible="{Binding IsMultiline}"
+                                   FontFamily="Menlo, Monaco, monospace" FontSize="11.5"
+                                   MinHeight="110" MaxHeight="260"
+                                   ScrollViewer.VerticalScrollBarVisibility="Auto" />
+
+                          <TextBlock Text="{Binding Value}" IsVisible="{Binding IsReadOnly}"
+                                     Classes="muted" FontSize="12" />
+
+                          <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="{Binding Hint}" Classes="caption"
+                                       IsVisible="{Binding HasHint}" />
+                            <Border Classes="chip" Padding="6,0" IsVisible="{Binding IsDirty}">
+                              <TextBlock Text="未保存" Classes="caption" />
+                            </Border>
+                          </StackPanel>
+                        </StackPanel>
+                      </Grid>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <Border Classes="card" Padding="16,14">
+        <StackPanel Spacing="8">
+          <TextBlock Text="接后端要补的" Classes="label" />
+          <ItemsControl ItemsSource="{Binding SelectedPageItem.Planned}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="5" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <Grid ColumnDefinitions="Auto,*">
+                  <Ellipse Width="5" Height="5" Fill="{DynamicResource TextMutedBrush}"
+                           VerticalAlignment="Top" Margin="2,6,10,0" />
+                  <TextBlock Grid.Column="1" Text="{Binding}" Classes="caption" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <TextBlock Text="标「只读 · 实时」的页值来自 daemon 当前生效配置；点「编辑」改完保存（config.set），需要重启的段会提示。"
+                     Classes="caption" />
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

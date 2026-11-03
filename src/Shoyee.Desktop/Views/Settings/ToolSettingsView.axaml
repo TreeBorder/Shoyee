@@ -1,0 +1,98 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:items="using:Shoyee.Desktop.ViewModels.Items"
+             x:Class="Shoyee.Desktop.Views.Settings.ToolSettingsView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="30,18,30,40" Spacing="16"
+                HorizontalAlignment="Stretch">
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="3">
+              <TextBlock Text="工具" Classes="h2" />
+              <TextBlock Text="{Binding Runtime.StatusText}" Classes="caption" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                        VerticalAlignment="Top">
+              <Border Classes="badge mint" IsVisible="{Binding Runtime.IsLive}">
+                <TextBlock Text="实时" />
+              </Border>
+              <Border Classes="badge muted" IsVisible="{Binding Runtime.IsPlaceholder}">
+                <TextBlock Text="占位" />
+              </Border>
+              <ProgressBar IsIndeterminate="True" Width="40" Height="4"
+                           IsVisible="{Binding Runtime.IsLoading}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Grid>
+
+          <Border IsVisible="{Binding Runtime.HasError}"
+                  Background="{DynamicResource CardHoverBrush}"
+                  CornerRadius="8" Padding="10,7">
+            <TextBlock Text="{Binding Runtime.ErrorText}" Classes="caption"
+                       Foreground="{DynamicResource DangerBrush}" TextWrapping="Wrap" />
+          </Border>
+
+          <Separator />
+
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="加载中…" Classes="caption"
+                       IsVisible="{Binding Runtime.IsLoading}" />
+            <TextBlock Grid.Column="1" Text="{Binding Runtime.ToolCountText}" Classes="caption" />
+          </Grid>
+
+          <ItemsControl ItemsSource="{Binding ToolStatuses}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="2" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="items:ToolStatusItem">
+                <Border Padding="8,7" CornerRadius="8">
+                  <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="2">
+                      <StackPanel Orientation="Horizontal" Spacing="7">
+                        <TextBlock Text="{Binding Name}" Classes="mono" FontSize="11.5" />
+                        <Border Classes="chip" Padding="6,0">
+                          <TextBlock Text="{Binding ScopeLabel}" Classes="caption" />
+                        </Border>
+                        <Border Classes="chip" Padding="6,0" IsVisible="{Binding IsMcp}">
+                          <TextBlock Text="{Binding Group}" Classes="caption" />
+                        </Border>
+                        <Border Classes="chip" Padding="6,0" IsVisible="{Binding Writes}">
+                          <TextBlock Text="写操作" Classes="caption" />
+                        </Border>
+                      </StackPanel>
+                      <TextBlock Text="{Binding Description}" Classes="caption" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                                VerticalAlignment="Center">
+                      <Border Classes="chip" IsVisible="{Binding RequiresApproval}">
+                        <TextBlock Text="需审批" Classes="caption" />
+                      </Border>
+                      <Border Classes="badge mint" IsVisible="{Binding IsEnabled}">
+                        <TextBlock Text="已启用" />
+                      </Border>
+                      <Border Classes="badge muted" IsVisible="{Binding !IsEnabled}">
+                        <TextBlock Text="未启用" />
+                      </Border>
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <TextBlock Text="数据来自 tools.list；搜索、分组筛选与启停写入口下一步再接。"
+                     Classes="caption" />
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

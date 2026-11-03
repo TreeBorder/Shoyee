@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 工具面：profile → ChatOptions.Tools、工具实现、审批包装、MCP（预置指令不在这里） -->
+  <ItemGroup>
+    <ProjectReference Include="..\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+    <ProjectReference Include="..\Shoyee.Memory\Shoyee.Memory.csproj" />
+    <ProjectReference Include="..\Shoyee.Notes\Shoyee.Notes.csproj" />
+    <ProjectReference Include="..\Shoyee.Photo\Shoyee.Photo.csproj" />
+    <ProjectReference Include="..\Shoyee.Voice\Shoyee.Voice.csproj" />
+    <ProjectReference Include="..\Shoyee.Web\Shoyee.Web.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Agents.AI" />
+    <PackageReference Include="Microsoft.Agents.AI.Abstractions" />
+    <!-- 受限终端：框架 LocalShellExecutor（执行体不自写） -->
+    <PackageReference Include="Microsoft.Agents.AI.Tools.Shell" />
+    <!-- MCP 客户端：官方 SDK，McpClientTool 直接进 ChatOptions.Tools -->
+    <PackageReference Include="ModelContextProtocol.Core" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+</Project>

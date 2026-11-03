@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 语音能力契约：合成/转写接口与 DTO（不绑定供应商，不碰文件系统） -->
+</Project>

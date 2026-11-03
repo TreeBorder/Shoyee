@@ -1,0 +1,64 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             x:Class="Shoyee.Desktop.Views.Settings.RoleplayContextView"
+             x:DataType="vm:MainViewModel">
+
+  <!-- 三个数字一行；摘要提示词占满剩余高度 -->
+  <Grid Margin="30,18,30,24" RowDefinitions="Auto,*" RowSpacing="14">
+
+    <Border Classes="card" Padding="18">
+      <StackPanel Spacing="14">
+        <StackPanel Spacing="3">
+          <TextBlock Text="摘要" Classes="h2" />
+          <TextBlock Text="RP 只有一条跨 Lane 的连续时间线，摘要也是全局一份。"
+                     Classes="caption" />
+        </StackPanel>
+
+        <Separator />
+
+        <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="14">
+          <StackPanel Spacing="5">
+            <TextBlock Text="摘要触发轮数" Classes="label" />
+            <TextBox Text="30" FontSize="13" />
+            <TextBlock Text="每累计这么多轮触发一次" Classes="caption" />
+          </StackPanel>
+          <StackPanel Grid.Column="1" Spacing="5">
+            <TextBlock Text="上下文轮数" Classes="label" />
+            <TextBox Text="50" FontSize="13" />
+            <TextBlock Text="每轮组装带最近多少轮" Classes="caption" />
+          </StackPanel>
+          <StackPanel Grid.Column="2" Spacing="5">
+            <TextBlock Text="冗余参考条数" Classes="label" />
+            <TextBox Text="60" FontSize="13" />
+            <TextBlock Text="摘要外的原文参考上限" Classes="caption" />
+          </StackPanel>
+          <StackPanel Grid.Column="3" Spacing="5">
+            <TextBlock Text="摘要范围" Classes="label" />
+            <TextBox Text="全局 · rp" IsReadOnly="True" FontSize="13" />
+            <TextBlock Text="固定，不按 Lane 分" Classes="caption" />
+          </StackPanel>
+        </Grid>
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Classes="card" Padding="0">
+      <Grid RowDefinitions="Auto,*">
+        <StackPanel Spacing="3" Margin="18,14,18,10">
+          <TextBlock Text="摘要提示词" Classes="h2" />
+          <TextBlock Text="压缩时使用；保留关系变化、承诺与未完成的事，不加入原文没有的信息。"
+                     Classes="caption" />
+        </StackPanel>
+
+        <Border Grid.Row="1" BorderBrush="{DynamicResource BorderSoftBrush}"
+                BorderThickness="0,1,0,0">
+          <TextBox AcceptsReturn="True" TextWrapping="Wrap"
+                   FontFamily="Menlo, Monaco, monospace" FontSize="12"
+                   Margin="14" Padding="12"
+                   Text="把下面的对话压缩成一段时间线摘要：&#10;保留关系变化、承诺、未完成的事与重要环境变化；&#10;不要复述每句话，不要加入原文没有的信息。" />
+        </Border>
+      </Grid>
+    </Border>
+
+  </Grid>
+</UserControl>

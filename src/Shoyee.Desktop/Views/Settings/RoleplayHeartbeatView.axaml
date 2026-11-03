@@ -1,0 +1,189 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:items="using:Shoyee.Desktop.ViewModels.Items"
+             xmlns:primitives="using:Avalonia.Controls.Primitives"
+             x:Class="Shoyee.Desktop.Views.Settings.RoleplayHeartbeatView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="30,18,30,40" Spacing="14">
+
+      <!-- 顶部状态与保存 -->
+      <Border Classes="card" Padding="16,14">
+        <StackPanel Spacing="8">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="3">
+              <TextBlock Text="心跳与惊喜问候" Classes="h2" />
+              <TextBlock Text="{Binding Runtime.StatusText}" Classes="caption" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                        VerticalAlignment="Center">
+              <Border Classes="badge mint" IsVisible="{Binding Runtime.IsLive}">
+                <TextBlock Text="实时" />
+              </Border>
+              <Border Classes="badge muted" IsVisible="{Binding Runtime.IsPlaceholder}">
+                <TextBlock Text="占位" />
+              </Border>
+              <Button Content="刷新" Classes="ghost" FontSize="11.5"
+                      Command="{Binding Runtime.RefreshCommand}" />
+              <Button Content="保存" Classes="primary" FontSize="11.5"
+                      Command="{Binding Runtime.SaveHeartbeatCommand}"
+                      ToolTip.Tip="参数走 config.set；提示词写回 prompts.json" />
+            </StackPanel>
+          </Grid>
+          <TextBlock Text="{Binding Runtime.ErrorText}" Classes="caption"
+                     Foreground="{DynamicResource DangerBrush}"
+                     IsVisible="{Binding Runtime.HasError}" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+
+      <!-- 调度 -->
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <StackPanel Spacing="3">
+            <TextBlock Text="调度" Classes="h2" />
+            <TextBlock Text="随机间隔；静默时段不触发。" Classes="caption" />
+          </StackPanel>
+          <Separator />
+          <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto,Auto" RowSpacing="12" ColumnSpacing="14">
+            <StackPanel Spacing="5">
+              <TextBlock Text="启用" Classes="label" />
+              <ToggleSwitch IsChecked="{Binding Runtime.HeartbeatEnabled}" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="5">
+              <TextBlock Text="最短间隔（分钟）" Classes="label" />
+              <TextBox Text="{Binding Runtime.HeartbeatMinMinutes}" FontSize="13" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Spacing="5">
+              <TextBlock Text="最长间隔（分钟）" Classes="label" />
+              <TextBox Text="{Binding Runtime.HeartbeatMaxMinutes}" FontSize="13" />
+            </StackPanel>
+            <StackPanel Grid.Column="3" Spacing="5">
+              <TextBlock Text="静默开始" Classes="label" />
+              <TextBox Text="{Binding Runtime.HeartbeatQuietStart}" FontSize="13" />
+            </StackPanel>
+            <StackPanel Grid.Row="1" Spacing="5">
+              <TextBlock Text="静默结束" Classes="label" />
+              <TextBox Text="{Binding Runtime.HeartbeatQuietEnd}" FontSize="13" />
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- 思念值 -->
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <StackPanel Spacing="3">
+            <TextBlock Text="思念值" Classes="h2" />
+            <TextBlock Text="实际运行值；触发后按概率扣减。" Classes="caption" />
+          </StackPanel>
+          <Separator />
+          <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto,Auto" RowSpacing="12" ColumnSpacing="14">
+            <StackPanel Spacing="5">
+              <TextBlock Text="炽热区（分钟）" Classes="label" />
+              <TextBox Text="{Binding Runtime.HeartbeatHotZone}" FontSize="13" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="5">
+              <TextBlock Text="冷宫区（分钟）" Classes="label" />
+              <TextBox Text="{Binding Runtime.HeartbeatCooldown}" FontSize="13" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Spacing="5">
+              <TextBlock Text="普通增量下限" Classes="label" />
+              <TextBox Text="{Binding Runtime.HeartbeatIncreaseMin}" FontSize="13" />
+            </StackPanel>
+            <StackPanel Grid.Column="3" Spacing="5">
+              <TextBlock Text="普通增量上限" Classes="label" />
+              <TextBox Text="{Binding Runtime.HeartbeatIncreaseMax}" FontSize="13" />
+            </StackPanel>
+            <StackPanel Grid.Row="1" Spacing="5">
+              <TextBlock Text="触发后扣减" Classes="label" />
+              <TextBox Text="{Binding Runtime.HeartbeatPenalty}" FontSize="13" />
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="1" Spacing="5">
+              <TextBlock Text="触发阈值" Classes="label" ToolTip.Tip="思念值低于它时不触发（Harem 特殊模式的做法）" />
+              <TextBox Text="{Binding Runtime.HeartbeatThreshold}" FontSize="13" />
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="2" Spacing="5">
+              <TextBlock Text="思念上限" Classes="label" />
+              <TextBox Text="{Binding Runtime.HeartbeatLongingCap}" FontSize="13" />
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- 档位 -->
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <StackPanel Spacing="3">
+            <TextBlock Text="档位" Classes="h2" />
+            <TextBlock Text="阈值决定 l1–l5；问候按档位取对应一条。" Classes="caption" />
+          </StackPanel>
+          <Separator />
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
+            <StackPanel Spacing="5">
+              <TextBlock Text="档位阈值（/ 分隔）" Classes="label" />
+              <TextBox Text="{Binding Runtime.HeartbeatThresholds}" FontSize="13" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="5">
+              <TextBlock Text="档位波动（%）" Classes="label" />
+              <TextBox Text="{Binding Runtime.HeartbeatFluctuation}" FontSize="13" />
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- 惊喜问候 -->
+      <StackPanel Spacing="4" Margin="2,6,0,0">
+        <TextBlock Text="惊喜问候提示词" Classes="h2" />
+        <TextBlock Text="每组 l1–l5。这些提示词不是直接说出口的话：触发时以系统消息（用户身份）注入给智能体；保存时写回 prompts.json。"
+                   Classes="caption" />
+      </StackPanel>
+
+      <ItemsControl ItemsSource="{Binding Runtime.HeartbeatPrompts}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <primitives:UniformGrid Columns="2" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="items:HeartbeatPromptGroup">
+            <Border Classes="card" Padding="16" Margin="0,0,12,12">
+              <StackPanel Spacing="10">
+                <Grid ColumnDefinitions="Auto,*">
+                  <Border Classes="badge" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Kind}" />
+                  </Border>
+                  <TextBlock Grid.Column="1" Text="{Binding Description}" Classes="caption"
+                             VerticalAlignment="Center" Margin="9,0,0,0" />
+                </Grid>
+
+                <Separator />
+
+                <ItemsControl ItemsSource="{Binding Lines}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Spacing="6" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="items:HeartbeatPromptLine">
+                      <Grid ColumnDefinitions="30,*">
+                        <TextBlock Text="{Binding Level}" Classes="mono muted"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}"
+                                 AcceptsReturn="True" TextWrapping="Wrap"
+                                 FontSize="12" Padding="8,5" MinHeight="52" />
+                      </Grid>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

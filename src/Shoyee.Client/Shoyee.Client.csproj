@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 客户端共用层：socket 路径、帧编解码、RPC 客户端（Daemon / Ctl / Desktop 共用） -->
+  <ItemGroup>
+    <ProjectReference Include="..\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+  </ItemGroup>
+</Project>

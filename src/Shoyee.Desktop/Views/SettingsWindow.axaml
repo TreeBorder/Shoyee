@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Shoyee.Desktop.ViewModels"
+        xmlns:views="using:Shoyee.Desktop.Views"
+        x:Class="Shoyee.Desktop.Views.SettingsWindow"
+        x:DataType="vm:MainViewModel"
+        Title="设置"
+        Width="1180" Height="780"
+        MinWidth="960" MinHeight="620"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Assets/app.png"
+        Background="{DynamicResource BgBrush}"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="40">
+
+  <Grid RowDefinitions="40,*">
+
+    <!-- 自绘标题栏：和主窗口同一套融合理念，保留 macOS 红绿灯 -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource BgRaisedBrush}"
+            BorderBrush="{DynamicResource BorderSoftBrush}"
+            BorderThickness="0,0,0,1"
+            PointerPressed="TitleBar_PointerPressed">
+      <TextBlock Text="设置" FontSize="12.5" FontWeight="SemiBold"
+                 Foreground="{DynamicResource TextDimBrush}"
+                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </Border>
+
+    <views:SettingsView Grid.Row="1" />
+
+  </Grid>
+</Window>

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Apple 本地转写：macOS Speech 框架经 speech-stt helper 调用（silk 解码 + ffmpeg 兜底） -->
+  <ItemGroup>
+    <ProjectReference Include="..\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+    <ProjectReference Include="..\Shoyee.Voice\Shoyee.Voice.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DrAbc.SilkCodec" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- helper 的 Swift 源码随项目走，打包时用 swiftc 编译成 speech-stt -->
+    <None Include="Native\speech-stt.swift" CopyToOutputDirectory="Never" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Shoyee.Voice.Apple.Tests" />
+  </ItemGroup>
+  <Target Name="BuildSpeechSttHelper"
+          AfterTargets="Build"
+          Condition="'$(OS)' == 'Unix' AND $([MSBuild]::IsOSPlatform('OSX')) AND Exists('$(MSBuildProjectDirectory)/Native/speech-stt.swift')"
+          Inputs="$(MSBuildProjectDirectory)/Native/speech-stt.swift"
+          Outputs="$(OutDir)speech-stt">
+    <!-- 尽力而为：没有 swiftc 就跳过（转写器 Configured=false，工具不挂载），不拦构建 -->
+    <Exec Command="swiftc -O &quot;$(MSBuildProjectDirectory)/Native/speech-stt.swift&quot; -o &quot;$(OutDir)speech-stt&quot;"
+          ContinueOnError="true" />
+  </Target>
+</Project>

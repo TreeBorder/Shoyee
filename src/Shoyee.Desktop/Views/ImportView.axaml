@@ -1,0 +1,171 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:import="using:Shoyee.Desktop.ViewModels.Import"
+             xmlns:items="using:Shoyee.Desktop.ViewModels.Items"
+             xmlns:theming="using:Shoyee.Desktop.Theming"
+             x:Class="Shoyee.Desktop.Views.ImportView"
+             x:DataType="vm:MainViewModel">
+
+  <Grid ColumnDefinitions="220,*">
+
+    <!-- 左：按模式分组的来源 -->
+    <Border Grid.Column="0"
+            Background="{DynamicResource BgRaisedBrush}"
+            BorderBrush="{DynamicResource BorderSoftBrush}"
+            BorderThickness="0,0,1,0">
+      <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="12,18,12,16" Spacing="4">
+
+          <TextBlock Text="工作模式" Classes="label" Margin="10,0,0,4" />
+          <ItemsControl ItemsSource="{Binding Import.WorkSources}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="import:ImportSourceViewModel">
+                <Button Classes="side-nav" Classes.active="{Binding IsActive}"
+                        Command="{Binding SelectCommand}" Margin="0,0,0,2">
+                  <StackPanel Orientation="Horizontal" Spacing="9">
+                    <PathIcon Data="{x:Static theming:IconGeometries.Briefcase}"
+                              Width="16" Height="16" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Button>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <Separator Margin="10,10" />
+
+          <TextBlock Text="角色模式" Classes="label" Margin="10,0,0,4" />
+          <ItemsControl ItemsSource="{Binding Import.RoleplaySources}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="import:ImportSourceViewModel">
+                <Button Classes="side-nav" Classes.active="{Binding IsActive}"
+                        Command="{Binding SelectCommand}" Margin="0,0,0,2">
+                  <StackPanel Orientation="Horizontal" Spacing="9">
+                    <PathIcon Data="{x:Static theming:IconGeometries.Chat}"
+                              Width="16" Height="16" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Button>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <TextBlock Text="以后加 Hermes Agent 等来源，只需要在导入目录里加一条。"
+                     Classes="caption" TextWrapping="Wrap" Margin="10,18,10,0" />
+
+        </StackPanel>
+      </ScrollViewer>
+    </Border>
+
+    <!-- 右：当前来源的路径 + 预览 -->
+    <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="28,20,28,18">
+
+      <StackPanel Grid.Row="0" Spacing="4">
+        <StackPanel Orientation="Horizontal" Spacing="9">
+          <TextBlock Text="{Binding Import.SelectedSource.Title}" Classes="h1" />
+          <Border Classes="badge muted" VerticalAlignment="Center">
+            <TextBlock Text="{Binding Import.SelectedSource.ModeLabel}" />
+          </Border>
+        </StackPanel>
+        <TextBlock Text="{Binding Import.SelectedSource.Description}"
+                   Classes="caption" TextWrapping="Wrap" LineHeight="19" />
+      </StackPanel>
+
+      <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Margin="0,16,0,0">
+        <TextBox Text="{Binding Import.SelectedSource.Path}"
+                 PlaceholderText="{Binding Import.SelectedSource.Placeholder}"
+                 FontSize="12.5" />
+        <Button Grid.Column="1" Content="选择目录" Classes="ghost"
+                Click="Browse_Click" />
+        <Button Grid.Column="2" Content="导入并预览" Classes="primary"
+                Command="{Binding Import.SelectedSource.ImportCommand}"
+                IsEnabled="{Binding !Import.SelectedSource.IsBusy}" />
+      </Grid>
+
+      <TextBlock Grid.Row="2" Text="{Binding Import.SelectedSource.Status}"
+                 Classes="caption" Margin="0,8,0,0" />
+
+      <Border Grid.Row="3" Classes="card" Margin="0,14,0,0" Padding="0"
+              ClipToBounds="True">
+        <Grid RowDefinitions="Auto,*">
+
+          <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="16,12,16,10">
+            <StackPanel Orientation="Horizontal" Spacing="9">
+              <TextBlock Text="{Binding Import.SelectedSource.PreviewLabel}" Classes="label" />
+              <TextBlock Text="{Binding Import.SelectedSource.PreviewTitle}"
+                         Classes="caption" VerticalAlignment="Center" />
+            </StackPanel>
+            <Button Grid.Column="1" Content="{Binding Import.SelectedSource.ApplyLabel}"
+                    Classes="primary" FontSize="12"
+                    Command="{Binding Import.SelectedSource.ApplyCommand}"
+                    IsVisible="{Binding Import.SelectedSource.HasPreview}" />
+          </Grid>
+
+          <Grid Grid.Row="1">
+
+            <!-- 空状态 -->
+            <StackPanel IsVisible="{Binding !Import.SelectedSource.HasPreview}"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+              <TextBlock Text="还没有预览" FontSize="13" Classes="muted"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="填路径后点「导入并预览」；确认没问题再应用。"
+                         Classes="caption" HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <Grid IsVisible="{Binding Import.SelectedSource.HasPreview}">
+
+              <!-- 工作模式：会话列表 + 消息预览 -->
+              <Grid IsVisible="{Binding Import.SelectedSource.IsWork}"
+                    ColumnDefinitions="270,*">
+                <ListBox ItemsSource="{Binding Import.SelectedSource.PreviewSessions}"
+                         SelectedItem="{Binding Import.SelectedSource.SelectedPreviewSession}"
+                         Background="Transparent" BorderThickness="0">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="items:SessionItem">
+                      <Border Padding="10,8">
+                        <StackPanel Spacing="3">
+                          <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="{Binding Title}" FontSize="12.5"
+                                       FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                       MaxLines="1" />
+                            <TextBlock Grid.Column="1" Text="{Binding Time}"
+                                       Classes="caption" />
+                          </Grid>
+                          <TextBlock Text="{Binding Preview}" Classes="caption"
+                                     TextTrimming="CharacterEllipsis" MaxLines="1" />
+                        </StackPanel>
+                      </Border>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+
+                <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Disabled"
+                              BorderBrush="{DynamicResource BorderSoftBrush}"
+                              BorderThickness="1,0,0,0">
+                  <ItemsControl ItemsSource="{Binding Import.SelectedSource.PreviewMessages}"
+                                ItemTemplate="{StaticResource ChatMessageTemplate}"
+                                Margin="18,14,18,8" />
+                </ScrollViewer>
+              </Grid>
+
+              <!-- 角色模式：整条消息预览 -->
+              <ScrollViewer IsVisible="{Binding Import.SelectedSource.IsRoleplay}"
+                            HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding Import.SelectedSource.PreviewMessages}"
+                              ItemTemplate="{StaticResource ChatMessageTemplate}"
+                              Margin="18,14,18,8" />
+              </ScrollViewer>
+
+            </Grid>
+          </Grid>
+        </Grid>
+      </Border>
+
+      <TextBlock Grid.Row="4" Margin="2,10,0,0"
+                 Text="导入只读取源目录，不修改原项目；路径会写进 desktop.json，下次启动自动读取并应用。"
+                 Classes="caption" TextWrapping="Wrap" />
+    </Grid>
+
+  </Grid>
+</UserControl>

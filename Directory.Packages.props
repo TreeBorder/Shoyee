@@ -1,0 +1,51 @@
+<Project>
+  <!-- 中央包管理：版本只在这里写，csproj 不写版本号 -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- 持久化 -->
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13" />
+    <!-- AGENTS 框架（版本与 Secretary 线上验证版本对齐） -->
+    <PackageVersion Include="Microsoft.Agents.AI" Version="1.25.0" />
+    <PackageVersion Include="Microsoft.Agents.AI.Abstractions" Version="1.25.0" />
+    <PackageVersion Include="Microsoft.Agents.AI.Harness" Version="1.25.0" />
+    <PackageVersion Include="Microsoft.Agents.AI.Tools.Shell" Version="1.25.0-preview.261014.1" />
+    <PackageVersion Include="ModelContextProtocol.Core" Version="2.2.0" />
+    <!-- 微信 .silk 语音解码（纯托管，Secretary 线上验证过） -->
+    <PackageVersion Include="DrAbc.SilkCodec" Version="1.0.0" />
+    <!-- 框架抽象（ChatMessage 的 JSON 多态序列化在 Agents.AI.Abstractions 里） -->
+    <!-- 版本受 Microsoft.Agents.AI.Abstractions 1.25.0 约束：它要求 >= 10.10.1，别降到更低 -->
+    <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="10.10.1" />
+    <!-- 模型接入：只走 OpenAI 兼容端点 -->
+    <PackageVersion Include="Microsoft.Extensions.AI.OpenAI" Version="10.10.0" />
+    <!-- DI / Hosting / 日志抽象（类库 ServiceExtensions 需要） -->
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
+    <!-- 定时任务调度（4.x 合并了 Hosting/DI，只依赖 net10.0） -->
+    <PackageVersion Include="Quartz" Version="4.6.2" />
+    <!-- 桌面（Avalonia） -->
+    <PackageVersion Include="Avalonia" Version="12.1.4" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+    <PackageVersion Include="Avalonia.Headless" Version="12.1.4" />
+    <PackageVersion Include="Avalonia.Skia" Version="12.1.4" />
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <!-- 测试 -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+</Project>

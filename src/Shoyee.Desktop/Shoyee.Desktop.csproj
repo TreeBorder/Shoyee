@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- 先做纯占位骨架：只摆放布局与样式，暂不接 RpcClient -->
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets/**" />
+    <!-- 合成示例会话：用于没连 daemon 时的界面预览，不含任何真实对话 -->
+    <EmbeddedResource Include="SampleData/*.raw.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <!-- 会话导入：只读 Secretary 的 state.db；接上 daemon 后这条依赖可以去掉 -->
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 下一轮接真实数据时直接用，不另写一套客户端 -->
+    <ProjectReference Include="../Shoyee.Client/Shoyee.Client.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Server酱³ 通知实现：直接 POST 官方接口，凭据复用 ~/Tools/push/config.sh 的 SCT_UID / SCT_SENDKEY -->
+  <ItemGroup>
+    <ProjectReference Include="..\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Shoyee.Notify.ServerChan.Tests" />
+  </ItemGroup>
+</Project>

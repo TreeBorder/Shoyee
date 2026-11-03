@@ -1,0 +1,13 @@
+<Project>
+  <!-- 全局构建属性：net10.0、Nullable、ImplicitUsings（约定见 AGENTS.md） -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- 框架 Agents.AI 仍带实验性诊断，与框架 samples 同款处理 -->
+    <NoWarn>$(NoWarn);OPENAI001;MAAI001</NoWarn>
+    <!-- 目录路径即命名空间，禁止文件夹里再写 namespace 注解 -->
+    <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+  </PropertyGroup>
+</Project>

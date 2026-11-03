@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 代理层：模型客户端、双模式 agent 装配、轮次运行时、审批、子智能体 -->
+  <ItemGroup>
+    <ProjectReference Include="..\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+    <ProjectReference Include="..\Shoyee.Sessions\Shoyee.Sessions.csproj" />
+    <ProjectReference Include="..\Shoyee.Storage.Abstractions\Shoyee.Storage.Abstractions.csproj" />
+    <ProjectReference Include="..\Shoyee.Tools\Shoyee.Tools.csproj" />
+    <ProjectReference Include="..\Shoyee.Voice\Shoyee.Voice.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Agents.AI" />
+    <PackageReference Include="Microsoft.Agents.AI.Harness" />
+    <PackageReference Include="Microsoft.Extensions.AI.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,100 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:items="using:Shoyee.Desktop.ViewModels.Items"
+             xmlns:primitives="using:Avalonia.Controls.Primitives"
+             x:Class="Shoyee.Desktop.Views.Settings.WorkSubagentsView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="30,18,30,40" Spacing="14">
+
+      <!-- 调度参数 -->
+      <Border Classes="card" Padding="16,14">
+        <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="14">
+          <StackPanel Spacing="5">
+            <TextBlock Text="默认异步" Classes="label" />
+            <ToggleSwitch IsChecked="{Binding Runtime.SubagentAutoWaitEnabled}" IsEnabled="False" />
+            <TextBlock Text="派完即回，不拖她的回合" Classes="caption" />
+          </StackPanel>
+          <StackPanel Grid.Column="1" Spacing="5">
+            <TextBlock Text="等待超时（秒）" Classes="label" />
+            <TextBox Text="{Binding Runtime.SubagentWaitTimeout}" IsReadOnly="True" FontSize="13" />
+          </StackPanel>
+          <StackPanel Grid.Column="2" Spacing="5">
+            <TextBlock Text="循环上限" Classes="label" />
+            <TextBox Text="{Binding Runtime.SubagentMaxLoops}" IsReadOnly="True" FontSize="13" />
+          </StackPanel>
+          <StackPanel Grid.Column="3" Spacing="5">
+            <TextBlock Text="终态推送" Classes="label" />
+            <ToggleSwitch IsChecked="False" IsEnabled="False" />
+            <TextBlock Text="完成后推一条通知" Classes="caption" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <StackPanel Spacing="4" Margin="2,2,0,0">
+        <TextBlock Text="已配置的子智能体" Classes="h2" />
+        <TextBlock Text="空列表 = 不启用，background_agents_* 工具族不出现；改配置需要重启 daemon。"
+                   Classes="caption" />
+      </StackPanel>
+
+      <!-- 卡片：一行一个子智能体 -->
+      <ItemsControl ItemsSource="{Binding Subagents}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="12" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="items:SubagentRowItem">
+            <Border Classes="card" Padding="16">
+              <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="10">
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding Name}" Classes="mono muted" FontSize="10" />
+                  </StackPanel>
+                  <Border Grid.Column="1" Classes="badge" VerticalAlignment="Top"
+                          IsVisible="{Binding AllowShell}">
+                    <TextBlock Text="可执行" />
+                  </Border>
+                </Grid>
+
+                <TextBlock Grid.Row="1" Text="{Binding Description}" Classes="muted"
+                           FontSize="12" />
+
+                <!-- 提示词：最多 5 行，超出省略 -->
+                <Border Grid.Row="2" Background="{DynamicResource BgRaisedBrush}"
+                        BorderBrush="{DynamicResource BorderSoftBrush}"
+                        BorderThickness="1" CornerRadius="8" Padding="12,9">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="提示词" Classes="label" />
+                    <TextBlock Text="{Binding Instructions}" FontSize="11.5"
+                               LineHeight="18" Height="90" MaxLines="5" ClipToBounds="True"
+                               TextTrimming="CharacterEllipsis" />
+                  </StackPanel>
+                </Border>
+
+                <Border Grid.Row="3" Background="{DynamicResource BgRaisedBrush}"
+                        CornerRadius="8" Padding="10,7">
+                  <TextBlock Text="{Binding Tools}" Classes="mono muted" FontSize="10.5" />
+                </Border>
+
+                <Grid Grid.Row="4" ColumnDefinitions="Auto,*,Auto">
+                  <ToggleSwitch IsChecked="{Binding IsEnabled}" IsEnabled="False"
+                                OnContent="启用" OffContent="停用" FontSize="11.5" />
+                  <TextBlock Grid.Column="2" Text="改 tools.subagents.agents 后重启 daemon"
+                             Classes="caption" VerticalAlignment="Center" />
+                </Grid>
+
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

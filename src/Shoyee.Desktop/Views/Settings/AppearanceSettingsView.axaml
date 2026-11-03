@@ -1,0 +1,127 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             x:Class="Shoyee.Desktop.Views.Settings.AppearanceSettingsView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="30,18,30,40" Spacing="16"
+                HorizontalAlignment="Stretch">
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="14">
+          <StackPanel Spacing="3">
+            <TextBlock Text="颜色" Classes="h2" />
+            <TextBlock Text="颜色模式和强调色；预设之外的取色器留到后面再做。"
+                       Classes="caption" />
+          </StackPanel>
+
+          <Separator />
+
+          <StackPanel Spacing="8">
+            <TextBlock Text="颜色模式" Classes="label" />
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Button Content="深色" Classes="pill"
+                      Classes.active="{Binding IsDarkTheme}"
+                      Command="{Binding SetThemeCommand}" CommandParameter="Dark" />
+              <Button Content="明亮" Classes="pill"
+                      Classes.active="{Binding IsLightTheme}"
+                      Command="{Binding SetThemeCommand}" CommandParameter="Light" />
+              <Button Content="跟随系统" Classes="pill"
+                      Classes.active="{Binding IsSystemTheme}"
+                      Command="{Binding SetThemeCommand}" CommandParameter="System" />
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel Spacing="8">
+            <TextBlock Text="主题色" Classes="label" />
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Button Classes="swatch" Classes.active="{Binding IsRose}"
+                      Command="{Binding SetAccentCommand}" CommandParameter="Rose" ToolTip.Tip="藕粉">
+                <Border Width="18" Height="18" CornerRadius="9" Background="#E8A2B4" />
+              </Button>
+              <Button Classes="swatch" Classes.active="{Binding IsBlue}"
+                      Command="{Binding SetAccentCommand}" CommandParameter="Blue" ToolTip.Tip="雾蓝">
+                <Border Width="18" Height="18" CornerRadius="9" Background="#8FB8E8" />
+              </Button>
+              <Button Classes="swatch" Classes.active="{Binding IsTeal}"
+                      Command="{Binding SetAccentCommand}" CommandParameter="Teal" ToolTip.Tip="青绿">
+                <Border Width="18" Height="18" CornerRadius="9" Background="#8FD0C6" />
+              </Button>
+              <Button Classes="swatch" Classes.active="{Binding IsAmber}"
+                      Command="{Binding SetAccentCommand}" CommandParameter="Amber" ToolTip.Tip="暖金">
+                <Border Width="18" Height="18" CornerRadius="9" Background="#E8C27E" />
+              </Button>
+              <Button Classes="swatch" Classes.active="{Binding IsViolet}"
+                      Command="{Binding SetAccentCommand}" CommandParameter="Violet" ToolTip.Tip="淡紫">
+                <Border Width="18" Height="18" CornerRadius="9" Background="#B9A0E8" />
+              </Button>
+              <Button Classes="swatch" Classes.active="{Binding IsSlate}"
+                      Command="{Binding SetAccentCommand}" CommandParameter="Slate" ToolTip.Tip="石墨">
+                <Border Width="18" Height="18" CornerRadius="9" Background="#A9B4C4" />
+              </Button>
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="14">
+          <StackPanel Spacing="3">
+            <TextBlock Text="对话与角色" Classes="h2" />
+            <TextBlock Text="会话窄栏和立绘倍率；只影响本机窗口的呈现。"
+                       Classes="caption" />
+          </StackPanel>
+
+          <Separator />
+
+          <StackPanel Spacing="8">
+            <TextBlock Text="会话宽度" Classes="label" />
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Button Content="铺满" Classes="pill"
+                      Classes.active="{Binding Work.IsFullWidth}"
+                      Command="{Binding Work.SetFullWidthCommand}" />
+              <Button Content="居中" Classes="pill"
+                      Classes.active="{Binding Work.IsCenteredWidth}"
+                      Command="{Binding Work.SetCenteredWidthCommand}" />
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel Spacing="8">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Text="角色立绘大小" Classes="label" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="{Binding Roleplay.PortraitScaleLabel}"
+                         FontSize="11.5" FontWeight="SemiBold" />
+            </Grid>
+            <Slider Minimum="0.6" Maximum="1.3" TickFrequency="0.05"
+                    IsSnapToTickEnabled="True"
+                    Value="{Binding Roleplay.PortraitScale, Mode=TwoWay}" />
+            <TextBlock Text="1.0 为标准；竖屏窗口也按这个倍率缩放。"
+                       Classes="caption" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="14">
+          <StackPanel Spacing="3">
+            <TextBlock Text="文件预览" Classes="h2" />
+            <TextBlock Text="点附件卡片的「预览」时执行这条命令；「打开」仍走系统默认程序。"
+                       Classes="caption" />
+          </StackPanel>
+
+          <Separator />
+
+          <StackPanel Spacing="8">
+            <TextBlock Text="预览命令" Classes="label" />
+            <TextBox Text="{Binding PreviewCommand, Mode=TwoWay}"
+                     PlaceholderText="留空 = 平台默认；例如 open {path} / explorer &quot;{path}&quot; / xdg-open {path}" />
+            <TextBlock Text="{}{path} 会替换成文件绝对路径；没写占位符时自动追加到最后。命令不经过 shell，含空格的参数用引号包起来。"
+                       Classes="caption" TextWrapping="Wrap" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

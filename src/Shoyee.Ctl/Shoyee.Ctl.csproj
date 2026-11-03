@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- shoyee-ctl：菜单栏调用的轻量命令行（连 socket 发一帧读一帧，不加载 Agent/EF） -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>shoyee-ctl</AssemblyName>
+    <RootNamespace>Shoyee.Ctl</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shoyee.Client\Shoyee.Client.csproj" />
+    <ProjectReference Include="..\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+  </ItemGroup>
+</Project>

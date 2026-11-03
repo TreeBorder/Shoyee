@@ -1,0 +1,89 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:settings="using:Shoyee.Desktop.ViewModels.Settings"
+             x:Class="Shoyee.Desktop.Views.Settings.WorkIndexView"
+             x:DataType="vm:MainViewModel">
+
+  <Grid Margin="30,18,30,24" RowDefinitions="Auto,*" RowSpacing="14">
+
+    <Border Classes="card" Padding="16,14">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="3">
+          <TextBlock Text="会话开局只注入「名称｜注释｜地址」，细节按地址读原文。"
+                     Classes="muted" />
+          <TextBlock Text="{Binding Runtime.StatusText}"
+                     Classes="mono muted" FontSize="10.5" TextTrimming="CharacterEllipsis" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"
+                    VerticalAlignment="Center">
+          <Border Classes="badge mint" IsVisible="{Binding Runtime.IsLive}">
+            <TextBlock Text="实时" />
+          </Border>
+          <Border Classes="badge muted" IsVisible="{Binding Runtime.IsPlaceholder}">
+            <TextBlock Text="占位" />
+          </Border>
+          <Button Content="刷新" Classes="ghost" FontSize="11.5"
+                  Command="{Binding Runtime.RefreshCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="1" Classes="card" Padding="18">
+      <Grid RowDefinitions="Auto,Auto,*">
+        <Grid ColumnDefinitions="170,1.4*,1.4*,150" Margin="12,0,12,8">
+          <TextBlock Text="名称" Classes="label" />
+          <TextBlock Grid.Column="1" Text="注释" Classes="label" />
+          <TextBlock Grid.Column="2" Text="地址" Classes="label" />
+          <TextBlock Grid.Column="3" Text="管理" Classes="label" />
+        </Grid>
+
+        <Separator Grid.Row="1" />
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+          <ItemsControl ItemsSource="{Binding Runtime.IndexRows}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="2" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="settings:IndexEntryItem">
+                <Border Padding="12,8" CornerRadius="8">
+                  <Grid ColumnDefinitions="170,1.4*,1.4*,150">
+                    <StackPanel VerticalAlignment="Center">
+                      <TextBlock Text="{Binding Name}" FontSize="12.5" FontWeight="SemiBold"
+                                 TextTrimming="CharacterEllipsis" />
+                      <TextBlock Text="{Binding Key}" Classes="caption" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="{Binding Comment}" Classes="caption"
+                               Margin="0,0,14,0" VerticalAlignment="Center"
+                               TextWrapping="Wrap" />
+                    <TextBlock Grid.Column="2" Text="{Binding Address}" Classes="mono muted"
+                               FontSize="10.5" Margin="0,0,14,0" VerticalAlignment="Center"
+                               TextWrapping="Wrap" />
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4"
+                                VerticalAlignment="Center">
+                      <Button Content="停用" Classes="ghost" FontSize="11" Padding="8,4"
+                              IsVisible="{Binding IsEnabled}"
+                              Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).Runtime.ToggleIndexCommand}"
+                              CommandParameter="{Binding}" />
+                      <Button Content="启用" Classes="ghost" FontSize="11" Padding="8,4"
+                              IsVisible="{Binding !IsEnabled}"
+                              Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).Runtime.ToggleIndexCommand}"
+                              CommandParameter="{Binding}" />
+                      <Button Content="删除" Classes="ghost" FontSize="11" Padding="8,4"
+                              Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).Runtime.DeleteIndexCommand}"
+                              CommandParameter="{Binding}" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </Grid>
+    </Border>
+
+  </Grid>
+</UserControl>

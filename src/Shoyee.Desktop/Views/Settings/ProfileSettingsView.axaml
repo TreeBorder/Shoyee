@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             x:Class="Shoyee.Desktop.Views.Settings.ProfileSettingsView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="30,18,30,40" Spacing="16"
+                HorizontalAlignment="Stretch">
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="14">
+          <StackPanel Spacing="3">
+            <TextBlock Text="左栏资料" Classes="h2" />
+            <TextBlock Text="不再显示工作区路径；这里改成可编辑的显示名和第二行说明。"
+                       Classes="caption" />
+          </StackPanel>
+
+          <Separator />
+
+          <Grid ColumnDefinitions="88,*" RowDefinitions="Auto,Auto">
+            <TextBlock Text="显示名" Classes="muted" VerticalAlignment="Center" Margin="0,0,0,10" />
+            <TextBox Grid.Column="1" Text="{Binding DisplayName, Mode=TwoWay}"
+                     PlaceholderText="筱义" Margin="0,0,0,10" />
+
+            <TextBlock Grid.Row="1" Text="第二行" Classes="muted" VerticalAlignment="Center" />
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Tagline, Mode=TwoWay}"
+                     PlaceholderText="个人助理 · 情感陪伴" />
+          </Grid>
+
+          <TextBlock Text="空白时回落默认值；修改在失焦后自动保存。"
+                     Classes="caption" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card" Padding="18">
+        <StackPanel Spacing="12">
+          <StackPanel Spacing="3">
+            <TextBlock Text="头像" Classes="h2" />
+            <TextBlock Text="选中的图片会复制到应用数据目录，原图移动也不影响。"
+                       Classes="caption" />
+          </StackPanel>
+
+          <Separator />
+
+          <!-- 用户头像 -->
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <Ellipse Width="38" Height="38">
+              <Ellipse.Fill>
+                <ImageBrush Source="{DynamicResource UserAvatar}" Stretch="UniformToFill" />
+              </Ellipse.Fill>
+            </Ellipse>
+            <StackPanel Grid.Column="1" Margin="10,0,0,0" Spacing="1"
+                        VerticalAlignment="Center">
+              <TextBlock Text="我的头像" FontSize="12.5" FontWeight="SemiBold" />
+              <TextBlock Text="{Binding UserAvatarLabel}" Classes="caption"
+                         TextTrimming="CharacterEllipsis" MaxLines="1" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4"
+                        VerticalAlignment="Center">
+              <Button Content="更换" Classes="ghost" FontSize="11.5"
+                      Click="PickUserAvatar_Click" />
+              <Button Content="默认" Classes="ghost" FontSize="11.5"
+                      Command="{Binding ResetUserAvatarCommand}" />
+            </StackPanel>
+          </Grid>
+
+          <Separator />
+
+          <!-- 智能体头像 -->
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <Ellipse Width="38" Height="38">
+              <Ellipse.Fill>
+                <ImageBrush Source="{DynamicResource AgentAvatar}" Stretch="UniformToFill"
+                            AlignmentY="Top" />
+              </Ellipse.Fill>
+            </Ellipse>
+            <StackPanel Grid.Column="1" Margin="10,0,0,0" Spacing="1"
+                        VerticalAlignment="Center">
+              <TextBlock Text="智能体头像" FontSize="12.5" FontWeight="SemiBold" />
+              <TextBlock Text="{Binding AgentAvatarLabel}" Classes="caption"
+                         TextTrimming="CharacterEllipsis" MaxLines="1" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4"
+                        VerticalAlignment="Center">
+              <Button Content="更换" Classes="ghost" FontSize="11.5"
+                      Click="PickAgentAvatar_Click" />
+              <Button Content="默认" Classes="ghost" FontSize="11.5"
+                      Command="{Binding ResetAgentAvatarCommand}" />
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

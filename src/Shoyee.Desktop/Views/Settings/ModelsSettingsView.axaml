@@ -1,0 +1,249 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:settings="using:Shoyee.Desktop.ViewModels.Settings"
+             x:Class="Shoyee.Desktop.Views.Settings.ModelsSettingsView"
+             x:DataType="vm:MainViewModel">
+
+  <Grid>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Margin="30,18,30,40" Spacing="16"
+                  HorizontalAlignment="Stretch">
+
+        <!-- 上半：三个场景分别用哪个模型 -->
+        <Border Classes="card" Padding="18">
+          <StackPanel Spacing="14">
+            <StackPanel Spacing="3">
+              <TextBlock Text="场景使用" Classes="h2" />
+              <TextBlock Text="每个场景从下面接入的模型里选一个；同一个模型可以同时承担多个场景。"
+                         Classes="caption" />
+            </StackPanel>
+
+            <Separator />
+
+            <!-- 主模型 -->
+            <Grid ColumnDefinitions="150,*">
+              <StackPanel Spacing="1" VerticalAlignment="Center">
+                <TextBlock Text="主模型" FontSize="12.5" FontWeight="SemiBold" />
+                <TextBlock Text="对话与工具调用" Classes="caption" />
+              </StackPanel>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <ComboBox Width="360" PlaceholderText="未绑定"
+                          ItemsSource="{Binding ModelCatalog.ChatOptions}"
+                          SelectedItem="{Binding ModelCatalog.ChatEntry, Mode=TwoWay}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="settings:ModelEntryViewModel">
+                      <StackPanel Spacing="1" Margin="0,2">
+                        <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding EndpointLabel}" Classes="mono muted" FontSize="10.5" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Border Classes="badge gold" VerticalAlignment="Center"
+                        IsVisible="{Binding ModelCatalog.IsChatMissing}">
+                  <TextBlock Text="未绑定" />
+                </Border>
+              </StackPanel>
+            </Grid>
+
+            <!-- 小模型 -->
+            <Grid ColumnDefinitions="150,*">
+              <StackPanel Spacing="1" VerticalAlignment="Center">
+                <TextBlock Text="小模型" FontSize="12.5" FontWeight="SemiBold" />
+                <TextBlock Text="压缩摘要 / 会话标题 / 智能审批" Classes="caption" />
+              </StackPanel>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <ComboBox Width="360" PlaceholderText="未绑定"
+                          ItemsSource="{Binding ModelCatalog.SmallOptions}"
+                          SelectedItem="{Binding ModelCatalog.SmallEntry, Mode=TwoWay}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="settings:ModelEntryViewModel">
+                      <StackPanel Spacing="1" Margin="0,2">
+                        <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding EndpointLabel}" Classes="mono muted" FontSize="10.5" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Border Classes="badge gold" VerticalAlignment="Center"
+                        IsVisible="{Binding ModelCatalog.IsSmallMissing}">
+                  <TextBlock Text="未绑定" />
+                </Border>
+              </StackPanel>
+            </Grid>
+
+            <!-- 视觉模型 -->
+            <Grid ColumnDefinitions="150,*">
+              <StackPanel Spacing="1" VerticalAlignment="Center">
+                <TextBlock Text="视觉模型" FontSize="12.5" FontWeight="SemiBold" />
+                <TextBlock Text="附件图片 / analyze_image；不绑定 = 不做图片分析" Classes="caption" />
+              </StackPanel>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <ComboBox Width="360" PlaceholderText="不启用"
+                          ItemsSource="{Binding ModelCatalog.VisionOptions}"
+                          SelectedItem="{Binding ModelCatalog.VisionEntry, Mode=TwoWay}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="settings:ModelEntryViewModel">
+                      <StackPanel Spacing="1" Margin="0,2">
+                        <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding EndpointLabel}" Classes="mono muted" FontSize="10.5" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Content="清除" Classes="ghost" FontSize="11" Padding="9,4"
+                        VerticalAlignment="Center"
+                        Command="{Binding ModelCatalog.ClearVisionCommand}" />
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- 下半：接入的模型列表 -->
+        <Border Classes="card" Padding="18">
+          <StackPanel Spacing="12">
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="3">
+                <TextBlock Text="接入的模型" Classes="h2" />
+                <TextBlock Text="列表是唯一真源：改端点、模型名或适用场景都只改这里。"
+                           Classes="caption" />
+              </StackPanel>
+              <Button Grid.Column="1" Content="添加模型" Classes="primary" FontSize="12"
+                      VerticalAlignment="Top"
+                      Command="{Binding ModelCatalog.AddCommand}" />
+            </Grid>
+
+            <Separator />
+
+            <TextBlock Text="还没有接入模型。点右上角「添加模型」，勾选它能承担的场景。"
+                       Classes="caption" IsVisible="{Binding ModelCatalog.IsEmpty}" />
+
+            <ItemsControl ItemsSource="{Binding ModelCatalog.Entries}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Spacing="8" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="settings:ModelEntryViewModel">
+                  <Border Classes="tool-row" Padding="12,10">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                          <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold"
+                                     VerticalAlignment="Center" />
+                          <Border Classes="chip">
+                            <TextBlock Text="{Binding ScenesLabel}" Classes="caption" />
+                          </Border>
+                        </StackPanel>
+                        <TextBlock Text="{Binding EndpointLabel}" Classes="mono muted" FontSize="10.5" />
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                                  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding ContextLengthLabel}" Classes="caption"
+                                   VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <Button Content="编辑" Classes="ghost" FontSize="11" Padding="9,4"
+                                Command="{Binding EditCommand}" />
+                        <Button Content="删除" Classes="ghost" FontSize="11" Padding="9,4"
+                                Command="{Binding RemoveCommand}" />
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock Text="保存时按场景展开成后端格式：models.main / models.small / models.vision 各写一份端点；同一个模型被多个场景选中时会重复出现。接入 daemon 后改为 config.set。"
+                       Classes="caption" />
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card" Padding="16,14">
+          <StackPanel Spacing="4">
+            <TextBlock Text="模型只走 OpenAI 兼容端点；key 只存环境变量名，不写进 desktop.json。"
+                       Classes="muted" />
+            <TextBlock Text="主模型的上下文长度同时决定「对话页」上下文占比的分母。"
+                       Classes="caption" />
+          </StackPanel>
+        </Border>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- 添加 / 编辑模型：页内模态弹窗 -->
+    <Panel IsVisible="{Binding ModelCatalog.IsDialogOpen}">
+      <Border Background="{DynamicResource ScrimBrush}" />
+
+      <Border Classes="card dialog" Width="560" MaxHeight="660"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              Padding="22">
+        <StackPanel Spacing="14">
+          <TextBlock Text="{Binding ModelCatalog.DialogTitle}" Classes="h2" />
+
+          <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="520">
+            <StackPanel Spacing="14"
+                        DataContext="{Binding ModelCatalog.Editing}"
+                        x:DataType="settings:ModelEntryViewModel">
+
+              <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                <TextBlock Text="显示名" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,12" />
+                <TextBox Grid.Column="1" Text="{Binding Name, Mode=TwoWay}"
+                         PlaceholderText="如 DeepSeek Flash"
+                         FontSize="12.5" Margin="0,0,0,12" />
+
+                <TextBlock Grid.Row="1" Text="base_url" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,12" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding BaseUrl, Mode=TwoWay}"
+                         FontSize="12.5" Margin="0,0,0,12" />
+
+                <TextBlock Grid.Row="2" Text="模型 id" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,12" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Model, Mode=TwoWay}"
+                         FontSize="12.5" Margin="0,0,0,12" />
+
+                <TextBlock Grid.Row="3" Text="key 环境变量" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,12" />
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding KeyEnv, Mode=TwoWay}"
+                         FontSize="12.5" Margin="0,0,0,12" />
+
+                <TextBlock Grid.Row="4" Text="上下文长度" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,0" />
+                <Grid Grid.Row="4" Grid.Column="1" ColumnDefinitions="180,Auto">
+                  <NumericUpDown Value="{Binding ContextLength, Mode=TwoWay}"
+                                 Minimum="4096" Maximum="4000000" Increment="1024"
+                                 FormatString="0" FontSize="12.5" />
+                  <TextBlock Grid.Column="1" Text="{Binding ContextLengthLabel}"
+                             Classes="caption" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </Grid>
+              </Grid>
+
+              <StackPanel Spacing="6">
+                <TextBlock Text="适用场景" Classes="label" />
+                <StackPanel Orientation="Horizontal" Spacing="18">
+                  <CheckBox Content="主模型（对话）" IsChecked="{Binding IsChat, Mode=TwoWay}" />
+                  <CheckBox Content="小模型（摘要 / 标题）" IsChecked="{Binding IsSmall, Mode=TwoWay}" />
+                  <CheckBox Content="视觉（看图）" IsChecked="{Binding IsVision, Mode=TwoWay}" />
+                </StackPanel>
+              </StackPanel>
+
+              <TextBlock Text="{Binding Error}" Classes="caption"
+                         Foreground="{DynamicResource DangerBrush}"
+                         IsVisible="{Binding HasError}" />
+            </StackPanel>
+          </ScrollViewer>
+
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Content="取消" Classes="ghost" FontSize="12" Padding="14,6"
+                    Command="{Binding ModelCatalog.CancelDialogCommand}" />
+            <Button Content="保存" Classes="primary" FontSize="12" Padding="16,6"
+                    Command="{Binding ModelCatalog.SaveDialogCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Panel>
+
+  </Grid>
+</UserControl>

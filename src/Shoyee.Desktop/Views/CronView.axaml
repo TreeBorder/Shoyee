@@ -1,0 +1,247 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cron="using:Shoyee.Desktop.ViewModels.Cron"
+             x:Class="Shoyee.Desktop.Views.CronView"
+             x:DataType="cron:CronViewModel">
+
+  <Grid RowDefinitions="Auto,Auto,*" Margin="28,10,28,20">
+
+    <!-- ================= 标题 ================= -->
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,4,0,14">
+      <StackPanel Spacing="4">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock Text="定时任务" Classes="h1" />
+          <Border Classes="badge muted" VerticalAlignment="Center">
+            <TextBlock Text="工作模式" />
+          </Border>
+        </StackPanel>
+        <TextBlock Text="{Binding HeaderSubtitle}" Classes="caption" />
+      </StackPanel>
+
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+        <ProgressBar IsIndeterminate="True" Width="48" Height="4"
+                     IsVisible="{Binding IsLoading}" VerticalAlignment="Center" />
+        <Button Content="刷新" Classes="ghost" Command="{Binding RefreshCommand}" />
+      </StackPanel>
+    </Grid>
+
+    <!-- ================= 错误条 ================= -->
+    <Border Grid.Row="1"
+            IsVisible="{Binding HasError}"
+            Background="{DynamicResource CardBrush}"
+            BorderBrush="{DynamicResource DangerBrush}"
+            BorderThickness="1"
+            CornerRadius="10"
+            Padding="12,8"
+            Margin="0,0,0,10">
+      <TextBlock Text="{Binding ErrorText}" Foreground="{DynamicResource DangerBrush}"
+                 FontSize="11.5" TextWrapping="Wrap" />
+    </Border>
+
+    <!-- ================= 列表 + 详情 ================= -->
+    <Grid Grid.Row="2" ColumnDefinitions="300,16,*">
+
+      <!-- 左：任务列表 -->
+      <Grid Grid.Column="0" RowDefinitions="*">
+        <Border Classes="card" Padding="8">
+          <ListBox ItemsSource="{Binding Jobs}"
+                   SelectedItem="{Binding SelectedJob}"
+                   SelectionMode="Single">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="cron:CronJobItem">
+                <StackPanel Spacing="5" Margin="0,3">
+                  <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding Name}" Classes="nav-title"
+                               FontSize="12.5" FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis" MaxLines="1"
+                               VerticalAlignment="Center" />
+                    <Border Grid.Column="1" Classes="badge mint"
+                            IsVisible="{Binding Enabled}" VerticalAlignment="Center">
+                      <TextBlock Text="启用" />
+                    </Border>
+                    <Border Grid.Column="1" Classes="badge muted"
+                            IsVisible="{Binding IsDisabled}" VerticalAlignment="Center">
+                      <TextBlock Text="停用" />
+                    </Border>
+                  </Grid>
+                  <TextBlock Text="{Binding ScheduleLabel}" Classes="caption" />
+                  <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding NextRunText}" Classes="caption"
+                               TextTrimming="CharacterEllipsis" MaxLines="1" />
+                    <TextBlock Grid.Column="1" Text="{Binding LastStatusLabel}" Classes="caption"
+                               IsVisible="{Binding IsFailed}"
+                               Foreground="{DynamicResource DangerBrush}" />
+                  </Grid>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Border>
+
+        <!-- 空列表 -->
+        <Border Classes="card" Padding="18" VerticalAlignment="Top"
+                IsVisible="{Binding IsEmpty}">
+          <StackPanel Spacing="7">
+            <TextBlock Text="还没有定时任务" FontSize="13" FontWeight="SemiBold" />
+            <TextBlock Text="让模型用 cron_add 创建；工作模式的任务跑在独立会话，执行结果只进这里的台账。RP 的定时问候不在这里显示。"
+                       Classes="caption" LineHeight="18" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <!-- 右：详情 -->
+      <Grid Grid.Column="2">
+        <Border Classes="card" Padding="22" IsVisible="{Binding !HasSelection}"
+                VerticalAlignment="Top">
+          <TextBlock Text="从左侧选一个任务看详情。" Classes="dim" />
+        </Border>
+
+        <ScrollViewer IsVisible="{Binding HasSelection}" HorizontalScrollBarVisibility="Disabled">
+          <StackPanel Spacing="16" Margin="0,0,8,0">
+
+            <!-- 标题与操作 -->
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="5">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <TextBlock Text="{Binding SelectedJob.Name}" Classes="h2" TextWrapping="Wrap" />
+                  <Border Classes="badge mint" VerticalAlignment="Center"
+                          IsVisible="{Binding SelectedJob.Enabled}">
+                    <TextBlock Text="启用" />
+                  </Border>
+                  <Border Classes="badge muted" VerticalAlignment="Center"
+                          IsVisible="{Binding SelectedJob.IsDisabled}">
+                    <TextBlock Text="停用" />
+                  </Border>
+                </StackPanel>
+                <TextBlock Text="{Binding SelectedJob.ScheduleLabel}" Classes="caption" />
+              </StackPanel>
+
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                          VerticalAlignment="Top">
+                <Button Classes="ghost" FontSize="11.5" Command="{Binding RefreshDetailCommand}"
+                        ToolTip.Tip="重新载入执行记录">刷新详情</Button>
+                <Button Classes="ghost" FontSize="11.5" Command="{Binding ToggleEnabledCommand}"
+                        IsVisible="{Binding SelectedJob.Enabled}"
+                        ToolTip.Tip="停用后不再触发，但保留任务定义与执行台账">停用</Button>
+                <Button Classes="ghost" FontSize="11.5" Command="{Binding ToggleEnabledCommand}"
+                        IsVisible="{Binding SelectedJob.IsDisabled}"
+                        ToolTip.Tip="恢复调度">启用</Button>
+                <Button Classes="ghost" FontSize="11.5" Command="{Binding RequestDeleteCommand}"
+                        Foreground="{DynamicResource DangerBrush}">删除</Button>
+              </StackPanel>
+            </Grid>
+
+            <!-- 删除确认 -->
+            <Border IsVisible="{Binding IsConfirmingDelete}"
+                    Background="{DynamicResource CardBrush}"
+                    BorderBrush="{DynamicResource DangerBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12" Padding="14,11">
+              <StackPanel Spacing="9">
+                <TextBlock Text="确定删除这个任务？执行台账也会一起删除，不能恢复。"
+                           FontSize="12" TextWrapping="Wrap" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Button Content="确认删除" Classes="ghost" FontSize="11.5"
+                          Foreground="{DynamicResource DangerBrush}"
+                          Command="{Binding ConfirmDeleteCommand}" />
+                  <Button Content="取消" Classes="ghost" FontSize="11.5"
+                          Command="{Binding CancelDeleteCommand}" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <!-- 基本信息 -->
+            <Border Classes="card" Padding="16">
+              <Grid ColumnDefinitions="96,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                    RowSpacing="7">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="调度" Classes="muted" FontSize="11.5" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedJob.ScheduleLabel}" FontSize="12" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="执行方式" Classes="muted" FontSize="11.5" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedJob.KindLabel}" FontSize="12" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="投递" Classes="muted" FontSize="11.5" />
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedJob.DeliverLabel}" FontSize="12" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="下次触发" Classes="muted" FontSize="11.5" />
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedJob.NextRunText}" FontSize="12" />
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="最近运行" Classes="muted" FontSize="11.5" />
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding SelectedJob.LastRunText}" FontSize="12" />
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="上次状态" Classes="muted" FontSize="11.5" />
+                <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                  <TextBlock Text="{Binding SelectedJob.LastStatusLabel}" FontSize="12" />
+                  <TextBlock Text="{Binding SelectedJob.FailureLabel}" Classes="caption"
+                             Foreground="{DynamicResource DangerBrush}"
+                             IsVisible="{Binding SelectedJob.IsFailed}" />
+                </StackPanel>
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="创建时间" Classes="muted" FontSize="11.5" />
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding SelectedJob.CreatedText}" FontSize="12" />
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="失败原因" Classes="muted" FontSize="11.5"
+                           IsVisible="{Binding SelectedJob.HasLastError}" />
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding SelectedJob.LastError}"
+                           FontSize="11.5" TextWrapping="Wrap"
+                           Foreground="{DynamicResource DangerBrush}"
+                           IsVisible="{Binding SelectedJob.HasLastError}" />
+              </Grid>
+            </Border>
+
+            <!-- 内容 -->
+            <StackPanel Spacing="7">
+              <TextBlock Text="任务内容" Classes="label" />
+              <Border Background="{DynamicResource ComposerBrush}"
+                      BorderBrush="{DynamicResource BorderSoftBrush}"
+                      BorderThickness="1" CornerRadius="12" Padding="14,12">
+                <SelectableTextBlock Text="{Binding SelectedJob.Payload}"
+                                     Classes="mono" FontSize="11.5" LineHeight="18"
+                                     TextWrapping="Wrap" />
+              </Border>
+            </StackPanel>
+
+            <!-- 最近执行 -->
+            <StackPanel Spacing="7">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="最近执行" Classes="label" />
+                <TextBlock Grid.Column="1" Text="最多 10 条" Classes="caption" />
+              </Grid>
+
+              <Border Classes="card" Padding="14" IsVisible="{Binding !HasExecutions}">
+                <TextBlock Text="还没有执行记录；第一次触发后会出现在这里。"
+                           Classes="caption" TextWrapping="Wrap" />
+              </Border>
+
+              <ItemsControl ItemsSource="{Binding Executions}" IsVisible="{Binding HasExecutions}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="cron:CronExecutionItem">
+                    <Border Classes="card" Padding="14,12" Margin="0,0,0,8">
+                      <StackPanel Spacing="7">
+                        <Grid ColumnDefinitions="*,Auto">
+                          <TextBlock Text="{Binding ScheduledText}" FontSize="12" FontWeight="SemiBold" />
+                          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="{Binding MetaText}" Classes="caption"
+                                       Foreground="{DynamicResource DangerBrush}"
+                                       IsVisible="{Binding IsFailed}" />
+                            <TextBlock Text="{Binding MetaText}" Classes="caption"
+                                       IsVisible="{Binding !IsFailed}" />
+                          </StackPanel>
+                        </Grid>
+                        <SelectableTextBlock Text="{Binding ResultText}"
+                                             Classes="mono" FontSize="11" LineHeight="17"
+                                             TextWrapping="Wrap"
+                                             Foreground="{DynamicResource TextMutedBrush}" />
+                      </StackPanel>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+    </Grid>
+  </Grid>
+</UserControl>

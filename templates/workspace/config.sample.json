@@ -1,0 +1,93 @@
+{
+  "models": {
+    "main": {
+      "baseUrl": "https://api.deepseek.com/v1",
+      "modelId": "deepseek-chat",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0.8,
+      "contextLength": 131072
+    },
+    "small": {
+      "baseUrl": "https://api.deepseek.com/v1",
+      "modelId": "deepseek-chat",
+      "apiKeyEnv": "DEEPSEEK_API_KEY"
+    },
+    "vision": {
+      "baseUrl": "https://api.deepseek.com/v1",
+      "modelId": "deepseek-vl",
+      "apiKeyEnv": "DEEPSEEK_API_KEY"
+    }
+  },
+  "channels": {
+    "mattermost": {
+      "roleplay": {
+        "baseUrl": "https://mattermost.example.com",
+        "tokenEnv": "MATTERMOST_RP_TOKEN",
+        "displayName": "助手 · 角色",
+        "requireMention": true
+      },
+      "work": {
+        "baseUrl": "https://mattermost.example.com",
+        "tokenEnv": "MATTERMOST_TOKEN",
+        "displayName": "助手 · 工作",
+        "requireMention": true
+      }
+    },
+    "weChat": {
+      "tokenEnv": "WEIXIN_TOKEN",
+      "displayName": "助手 · 微信"
+    }
+  },
+  "proactive": {
+    "heartbeat": {
+      "enabled": true,
+      "minMinutes": 45,
+      "maxMinutes": 75,
+      "hotZoneMinutes": 40,
+      "cooldownMinutes": 120,
+      "longingCap": 100,
+      "normalIncreaseMin": 4,
+      "normalIncreaseMax": 8,
+      "triggerPenalty": 50,
+      "levelThresholds": [20, 40, 60, 80, 100],
+      "levelFluctuationChance": 30
+    },
+    "cron": true
+  },
+  "tools": {
+    "autoApproveReadOnly": true,
+    "mcp": [],
+    "subagents": {
+      "agents": [],
+      "autoWait": false,
+      "waitTimeoutSeconds": 600,
+      "maxLoopIterations": 8
+    }
+  },
+  "photo": null,
+  "voice": null,
+  "notes": null,
+  "shell": {
+    "workingDirectory": null,
+    "timeoutSeconds": 60,
+    "maxOutputBytes": 200000
+  },
+  "web": {
+    "provider": "deepseek",
+    "providers": {
+      "deepseek": {
+        "baseUrl": "https://api.deepseek.com/v1",
+        "apiKeyEnv": "DEEPSEEK_API_KEY"
+      }
+    }
+  },
+  "attachments": {
+    "autoAnalyze": true,
+    "timeoutSeconds": 60
+  },
+  "context": {
+    "compaction": {
+      "enabled": false
+    }
+  }
+}

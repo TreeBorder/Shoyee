@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 主动行为：心跳/思念、情绪状态、cron、通知（只决策与调度，对话内容交给 Agent） -->
+  <ItemGroup>
+    <ProjectReference Include="..\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+    <ProjectReference Include="..\Shoyee.Storage.Abstractions\Shoyee.Storage.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Quartz" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\.heartbeat\**\*.json" LogicalName="heartbeat/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

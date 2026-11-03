@@ -1,0 +1,56 @@
+# ---- .NET 构建产物 ----
+bin/
+obj/
+artifacts/
+publish/
+*.nupkg
+*.snupkg
+project.lock.json
+project.assets.json
+*.user
+*.suo
+*.userprefs
+
+# ---- Rider / IDE ----
+.idea/
+.vs/
+.vscode/
+_ReSharper*/
+*.DotSettings.user
+riderModule.iml
+
+# ---- NuGet ----
+/packages/
+.nuget/
+
+# ---- 测试与覆盖率 ----
+TestResults/
+*.trx
+coverage*.xml
+coverage*.json
+*.coverage
+
+# ---- 运行时数据（不进仓库）----
+# SQLite 库与日志
+*.db
+*.db-shm
+*.db-wal
+logs/
+.logs/
+# 生成/导出物
+exports/
+assets/generated/
+
+# ---- macOS / 系统 ----
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+
+# ---- 本地工具 ----
+.opencode/
+.claude/
+*.local.json

@@ -1,0 +1,46 @@
+{
+  "agentName": "示例角色",
+  "state": [
+    { "Key": "longing", "Name": "思念", "Value": "42" },
+    { "Key": "loneliness", "Name": "寂寞", "Value": "10" },
+    { "Key": "scene", "Name": "场景", "Value": "bedroom" },
+    { "Key": "emotion", "Name": "心情", "Value": "calm" }
+  ],
+  "rounds": [
+    {
+      "RoundId": "sample_round_0001",
+      "Request": [
+        {
+          "Role": "user",
+          "Contents": [
+            {
+              "$type": "text",
+              "text": "消息时间: 2026-01-01 20:00\n<UserMessage>今天过得怎么样？</UserMessage>"
+            }
+          ]
+        }
+      ],
+      "Response": [
+        {
+          "Role": "assistant",
+          "Contents": [
+            { "$type": "reasoning", "text": "先随口聊两句，别一上来就说事。" },
+            {
+              "$type": "functionCall",
+              "name": "camera",
+              "arguments": { "aspectRatio": "2:3" },
+              "callId": "call_rp_01"
+            },
+            { "$type": "text", "text": "挺好呀，刚收拾完屋子。\n给你看张照片。" }
+          ]
+        },
+        {
+          "Role": "tool",
+          "Contents": [
+            { "$type": "functionResult", "result": "已生成图片：/tmp/photo.jpg", "callId": "call_rp_01" }
+          ]
+        }
+      ]
+    }
+  ]
+}

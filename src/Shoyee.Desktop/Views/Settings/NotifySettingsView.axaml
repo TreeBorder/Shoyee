@@ -1,0 +1,182 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Shoyee.Desktop.ViewModels"
+             xmlns:settings="using:Shoyee.Desktop.ViewModels.Settings"
+             x:Class="Shoyee.Desktop.Views.Settings.NotifySettingsView"
+             x:DataType="vm:MainViewModel">
+
+  <Grid>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Margin="30,18,30,40" Spacing="16"
+                  HorizontalAlignment="Stretch">
+
+        <Border Classes="card" Padding="18">
+          <StackPanel Spacing="12">
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="3">
+                <TextBlock Text="通知推送" Classes="h2" />
+                <TextBlock Text="纯通知，不进会话；添加时先选供应商类型，再填它需要的字段。"
+                           Classes="caption" />
+              </StackPanel>
+              <Button Grid.Column="1" Content="添加通知" Classes="primary" FontSize="12"
+                      VerticalAlignment="Top"
+                      Command="{Binding NotifyTargets.AddCommand}" />
+            </Grid>
+
+            <Separator />
+
+            <ItemsControl ItemsSource="{Binding NotifyTargets.Entries}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Spacing="8" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="settings:NotifyTargetViewModel">
+                  <Border Classes="tool-row" Padding="12,10">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                          <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold"
+                                     VerticalAlignment="Center" />
+                          <Border Classes="chip">
+                            <TextBlock Text="{Binding KindLabel}" Classes="caption" />
+                          </Border>
+                          <Border Classes="badge mint" IsVisible="{Binding IsEnabled}">
+                            <TextBlock Text="已启用" />
+                          </Border>
+                          <Border Classes="badge muted" IsVisible="{Binding !IsEnabled}">
+                            <TextBlock Text="已停用" />
+                          </Border>
+                        </StackPanel>
+                        <TextBlock Text="{Binding EndpointLabel}" Classes="mono muted" FontSize="10.5" />
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                                  VerticalAlignment="Center">
+                        <Button Content="编辑" Classes="ghost" FontSize="11" Padding="9,4"
+                                Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).NotifyTargets.EditCommand}"
+                                CommandParameter="{Binding}" />
+                        <Button Content="删除" Classes="ghost" FontSize="11" Padding="9,4"
+                                Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).NotifyTargets.DeleteCommand}"
+                                CommandParameter="{Binding}" />
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock Text="现在只有全局一个 notify.provider；列表是占位展示，接 daemon 后换成 config.get / config.set 与 notify.test 自检。"
+                       Classes="caption" />
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card" Padding="16,14">
+          <StackPanel Spacing="4">
+            <TextBlock Text="凭据一律只写环境变量名；ServerChan 可以复用 ~/Tools/push/config.sh。"
+                       Classes="muted" />
+            <TextBlock Text="系统通知走 macOS 通知中心；失败时可以回退到脚本。"
+                       Classes="caption" />
+          </StackPanel>
+        </Border>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- 添加 / 编辑通知：页内模态弹窗 -->
+    <Panel IsVisible="{Binding NotifyTargets.IsDialogOpen}">
+      <Border Background="{DynamicResource ScrimBrush}" />
+
+      <Border Classes="card dialog" Width="560" MaxHeight="680"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              Padding="22">
+        <StackPanel Spacing="14">
+          <TextBlock Text="{Binding NotifyTargets.DialogTitle}" Classes="h2" />
+
+          <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="520">
+            <StackPanel Spacing="14"
+                        DataContext="{Binding NotifyTargets.Editing}"
+                        x:DataType="settings:NotifyTargetViewModel">
+
+              <StackPanel Spacing="6">
+                <TextBlock Text="供应商类型" Classes="label" />
+                <StackPanel Orientation="Horizontal" Spacing="18">
+                  <RadioButton GroupName="notify-kind" Content="系统通知"
+                               IsChecked="{Binding IsSystem, Mode=TwoWay}" />
+                  <RadioButton GroupName="notify-kind" Content="ServerChan"
+                               IsChecked="{Binding IsServerChan, Mode=TwoWay}" />
+                  <RadioButton GroupName="notify-kind" Content="邮件"
+                               IsChecked="{Binding IsEmail, Mode=TwoWay}" />
+                </StackPanel>
+              </StackPanel>
+
+              <Grid ColumnDefinitions="110,*" RowDefinitions="Auto">
+                <TextBlock Text="显示名" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,0" />
+                <TextBox Grid.Column="1" Text="{Binding Name, Mode=TwoWay}"
+                         PlaceholderText="如 手机推送" FontSize="12.5" />
+              </Grid>
+
+              <CheckBox Content="启用这条推送" IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
+
+              <StackPanel Spacing="6" IsVisible="{Binding IsSystem}">
+                <TextBlock Text="系统通知" Classes="label" />
+                <CheckBox Content="通知中心失败时回退到脚本（fallbackToScript）"
+                          IsChecked="{Binding FallbackToScript, Mode=TwoWay}" />
+              </StackPanel>
+
+              <Grid ColumnDefinitions="130,*" RowDefinitions="Auto,Auto" IsVisible="{Binding IsServerChan}">
+                <TextBlock Text="UID 环境变量" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,12" />
+                <TextBox Grid.Column="1" Text="{Binding UidEnv, Mode=TwoWay}"
+                         FontSize="12.5" Margin="0,0,0,12" />
+
+                <TextBlock Grid.Row="1" Text="SendKey 环境变量" Classes="muted"
+                           VerticalAlignment="Center" Margin="0,0,16,0" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SendKeyEnv, Mode=TwoWay}"
+                         FontSize="12.5" />
+              </Grid>
+
+              <Grid ColumnDefinitions="130,*" RowDefinitions="Auto,Auto,Auto,Auto" IsVisible="{Binding IsEmail}">
+                <TextBlock Text="SMTP 主机" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,12" />
+                <TextBox Grid.Column="1" Text="{Binding SmtpHost, Mode=TwoWay}"
+                         FontSize="12.5" Margin="0,0,0,12" />
+
+                <TextBlock Grid.Row="1" Text="端口" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,12" />
+                <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding SmtpPort, Mode=TwoWay}"
+                               Minimum="1" Maximum="65535" Increment="1"
+                               FormatString="0" FontSize="12.5" Margin="0,0,0,12"
+                               HorizontalAlignment="Left" Width="160" />
+
+                <TextBlock Grid.Row="2" Text="用户名环境变量" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,12" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding UserEnv, Mode=TwoWay}"
+                         FontSize="12.5" Margin="0,0,0,12" />
+
+                <TextBlock Grid.Row="3" Text="密码环境变量" Classes="muted" VerticalAlignment="Center"
+                           Margin="0,0,16,0" />
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding PasswordEnv, Mode=TwoWay}"
+                         FontSize="12.5" />
+              </Grid>
+
+              <TextBlock Text="{Binding Error}" Classes="caption"
+                         Foreground="{DynamicResource DangerBrush}"
+                         IsVisible="{Binding HasError}" />
+            </StackPanel>
+          </ScrollViewer>
+
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Content="取消" Classes="ghost" FontSize="12" Padding="14,6"
+                    Command="{Binding NotifyTargets.CancelDialogCommand}" />
+            <Button Content="保存" Classes="primary" FontSize="12" Padding="16,6"
+                    Command="{Binding NotifyTargets.SaveDialogCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Panel>
+
+  </Grid>
+</UserControl>

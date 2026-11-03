@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 图片能力契约与编排：提示词词表、请求组装、落盘、异步出图队列（不绑定具体供应商） -->
+  <ItemGroup>
+    <ProjectReference Include="..\Shoyee.Contracts\Shoyee.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- 词表与工作流模板随程序集走；首次启动复制到 {workspace}/.comfyui/，已有文件不覆盖 -->
+    <EmbeddedResource Include="Templates\.comfyui\**\*.json" LogicalName="comfyui/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>
