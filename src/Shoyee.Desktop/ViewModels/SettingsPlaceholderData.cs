@@ -5,6 +5,9 @@ namespace Shoyee.Desktop.ViewModels;
 /// <summary>
 /// 设置页的占位数据：这一轮还没接 RPC / 工作区文件，先把结构定下来。
 /// 接后端时整块替换成 <c>session.snapshot</c>、<c>tools.*</c> 和 MCP 状态即可，视图不用改。
+///
+/// 这里的文案全部是**中性示例**（人名、索引条目、提示词都是编的）。仓库公开，
+/// 不要把真实个人配置、真实索引或私人提示词填进来。
 /// </summary>
 internal static class SettingsPlaceholderData
 {

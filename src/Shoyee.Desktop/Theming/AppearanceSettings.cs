@@ -9,7 +9,7 @@ namespace Shoyee.Desktop.Theming;
 /// <param name="PortraitScale">立绘大小倍率（1.0 = 标准）。</param>
 /// <param name="DisplayName">左栏显示的名字（默认「筱义」，不显示工作区路径）。</param>
 /// <param name="Tagline">左栏名字下面的一行说明。</param>
-/// <param name="WorkspacePath">工作区路径；接 daemon 前只作为本机配置保存，不参与连接。</param>
+/// <param name="WorkspacePath">工作区路径；接 daemon 前只作为本机配置保存，不参与连接。默认 <c>~/Shoyee</c> 只是占位。</param>
 /// <param name="SidebarCollapsed">左侧菜单是否折叠成图标栏。</param>
 /// <param name="UserAvatarPath">用户头像文件（绝对路径，空 = 默认剪影）。</param>
 /// <param name="AgentAvatarPath">智能体头像文件（绝对路径，空 = 内置头像）。</param>
